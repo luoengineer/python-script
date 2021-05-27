@@ -1,0 +1,121 @@
+
+****************************************************************************
+Driver GN7153B TxFault test, start time : 2021-03-09 17:14:36
+****************************************************************************
+FEP136_0.6_ES0_20210202110023
+POR...
+Read A2[110] TxFault flag :1
+Read GN7153B Register 99 (TX_FAULT_LDBIAS_VTH) :0x00
+GN7153B TX_FAULT_LDBIAS_VTH Verity Ok
+POR...
+Read A2[110] TxFault flag :1
+Read GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xFF
+GN7153B TX_FAULT_LDBIAS_CUR_TH Verity Ok
+POR...
+Read A2[110] TxFault flag :1
+Read GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xFF
+GN7153B TXFAULT_LDMOD_CUR_TH Verity Ok
+POR...
+Read A2[110] TxFault flag :1
+Read GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xFF
+GN7153B TXFAULT_LD_IPHOTO_TH Verity Ok
+****************************************************************************
+Driver GN7153B TxFault test, end time : 2021-03-09 17:14:50, elapsed time :  0 h  0 m 14.00 s
+****************************************************************************
+****************************************************************************
+Driver EOC5002 TxFault test, start time : 2021-03-09 17:16:44
+****************************************************************************
+FEP136_0.6_ES0_20210202110023
+POR...
+Read B2[110] TxFault flag :0
+Read EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0xC0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0xB6
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0xAC
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0xA2
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x98
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x8E
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x84
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x7A
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x70
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x66
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x5C
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x52
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x48
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x3E
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 26 (TX_FAULT_LDBIAS_FTH) :0x34
+Read B2[110] TxFault flag :1
+EOC5002 TX_FAULT_LDBIAS_FTH Verity Ok
+POR...
+Read B2[110] TxFault flag :0
+Read EOC5002 Register 27 (TX_FAULT_MPD_TH) :0xC0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0xB6
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0xAC
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0xA2
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x98
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x8E
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x84
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x7A
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x70
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x66
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x5C
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x52
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x48
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x3E
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x34
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x2A
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x20
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x16
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 27 (TX_FAULT_MPD_TH) :0x0C
+Read B2[110] TxFault flag :1
+EOC5002 TX_FAULT_MPD_TH Verity Ok
+POR...
+Read B2[110] TxFault flag :0
+Read EOC5002 Register 28 (TXFAULT_VF_TH) :0x80
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x76
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x6C
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x62
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x58
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x4E
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x44
+Read B2[110] TxFault flag :0
+Write EOC5002 Register 28 (TXFAULT_VF_TH) :0x3A
+Read B2[110] TxFault flag :1
+EOC5002 TXFAULT_VF_TH Verity Ok
+****************************************************************************
+Driver EOC5002 TxFault test, end time : 2021-03-09 17:17:05, elapsed time :  0 h  0 m 20.00 s
+****************************************************************************

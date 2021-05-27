@@ -1,0 +1,154 @@
+
+****************************************************************************
+Driver GN7153B TxFault test, start time : 2021-03-09 16:47:31
+****************************************************************************
+FEP136_0.6_ES0_20210202110023
+POR...
+Read A2[110] TxFault flag :0
+Read GN7153B Register 99 (TX_FAULT_LDBIAS_VTH) :0x00
+Write GN7153B Register 99 (TX_FAULT_LDBIAS_VTH) :0x07
+Read A2[110] TxFault flag :0
+GN7153B TX_FAULT_LDBIAS_VTH Verity Fail
+POR...
+Read A2[110] TxFault flag :0
+Read GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xFF
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xF5
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xEB
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xE1
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xD7
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xCD
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xC3
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xB9
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xAF
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0xA5
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0x9B
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0x91
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0x87
+Read A2[110] TxFault flag :0
+Write GN7153B Register 100 (TX_FAULT_LDBIAS_CUR_TH) :0x7D
+Read A2[110] TxFault flag :1
+GN7153B TX_FAULT_LDBIAS_CUR_TH Verity Ok
+POR...
+Read A2[110] TxFault flag :0
+Read GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xFF
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xF5
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xEB
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xE1
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xD7
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xCD
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xC3
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xB9
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xAF
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0xA5
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x9B
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x91
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x87
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x7D
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x73
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x69
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x5F
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x55
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x4B
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x41
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x37
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x2D
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x23
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x19
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x0F
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x05
+Read A2[110] TxFault flag :0
+Write GN7153B Register 101 (TXFAULT_LDMOD_CUR_TH) :0x00
+Read A2[110] TxFault flag :0
+GN7153B TXFAULT_LDMOD_CUR_TH Verity Fail
+POR...
+Read A2[110] TxFault flag :0
+Read GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xFF
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xF5
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xEB
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xE1
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xD7
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xCD
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xC3
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xB9
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xAF
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0xA5
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x9B
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x91
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x87
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x7D
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x73
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x69
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x5F
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x55
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x4B
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x41
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x37
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x2D
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x23
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x19
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x0F
+Read A2[110] TxFault flag :0
+Write GN7153B Register 102 (TXFAULT_LD_IPHOTO_TH) :0x05
+Read A2[110] TxFault flag :1
+GN7153B TXFAULT_LD_IPHOTO_TH Verity Ok
+****************************************************************************
+Driver GN7153B TxFault test, end time : 2021-03-09 16:48:01, elapsed time :  0 h  0 m 29.00 s
+****************************************************************************

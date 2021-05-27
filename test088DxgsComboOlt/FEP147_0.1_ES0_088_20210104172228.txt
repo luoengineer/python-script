@@ -1,0 +1,483 @@
+
+****************************************************************************
+Read-back password test, start time : 2021-02-23 08:44:34
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 08:54:24
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 08:56:28
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 08:58:39
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 09:33:07
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 09:46:05
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 09:46:33
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 09:50:01
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+****************************************************************************
+Read-back password test, start time : 2021-02-23 09:50:32
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+A2[119]=0xFF,ok
+A2[120]=0xFF,ok
+A2[121]=0xFF,ok
+A2[122]=0xFF,ok
+A2[123]=0xFF,ok
+A2[124]=0xFF,ok
+A2[125]=0xFF,ok
+A2[126]=0xFF,ok
+A2[127]=0x 0,error
+A2[128]=0x 0,error
+A2[129]=0x 0,error
+A2[130]=0x 0,error
+A2[131]=0x 0,error
+A2[132]=0x 0,error
+A2[133]=0x 0,error
+A2[134]=0x 0,error
+A2[135]=0x 0,error
+A2[136]=0x 0,error
+A2[137]=0x 0,error
+A2[138]=0x 0,error
+A2[139]=0x 0,error
+A2[140]=0x 0,error
+A2[141]=0x 0,error
+A2[142]=0x 0,error
+A2[143]=0x 0,error
+A2[144]=0x 0,error
+A2[145]=0x 0,error
+A2[146]=0x 0,error
+A2[147]=0x 0,error
+A2[148]=0x 0,error
+A2[149]=0x 0,error
+A2[150]=0x 0,error
+A2[151]=0x 0,error
+A2[152]=0x 0,error
+A2[153]=0x 0,error
+A2[154]=0x 0,error
+A2[155]=0x 0,error
+A2[156]=0x 0,error
+A2[157]=0x 0,error
+A2[158]=0x 0,error
+A2[159]=0x 0,error
+A2[160]=0x 0,error
+A2[161]=0x 0,error
+A2[162]=0x 0,error
+A2[163]=0x 0,error
+A2[164]=0x 0,error
+A2[165]=0x 0,error
+A2[166]=0x 0,error
+A2[167]=0x 0,error
+A2[168]=0x 0,error
+A2[169]=0x 0,error
+A2[170]=0x 0,error
+A2[171]=0x 0,error
+A2[172]=0x 0,error
+A2[173]=0x 0,error
+A2[174]=0x 0,error
+A2[175]=0x 0,error
+A2[176]=0x 0,error
+A2[177]=0x 0,error
+A2[178]=0x 0,error
+A2[179]=0x 0,error
+A2[180]=0x 0,error
+A2[181]=0x 0,error
+A2[182]=0x 0,error
+A2[183]=0x 0,error
+A2[184]=0x 0,error
+A2[185]=0x 0,error
+A2[186]=0x 0,error
+A2[187]=0x 0,error
+A2[188]=0x 0,error
+A2[189]=0x 0,error
+A2[190]=0x 0,error
+A2[191]=0x 0,error
+A2[192]=0x 0,error
+A2[193]=0x 0,error
+A2[194]=0x 0,error
+A2[195]=0x 0,error
+A2[196]=0x 0,error
+A2[197]=0x 0,error
+A2[198]=0x 0,error
+A2[199]=0x 0,error
+A2[200]=0x 0,error
+A2[201]=0x 0,error
+A2[202]=0x 0,error
+A2[203]=0x 0,error
+A2[204]=0x 0,error
+A2[205]=0x 0,error
+A2[206]=0x 0,error
+A2[207]=0x 0,error
+A2[208]=0x 0,error
+A2[209]=0x 0,error
+A2[210]=0x 0,error
+A2[211]=0x 0,error
+A2[212]=0x 0,error
+A2[213]=0x 0,error
+A2[214]=0x 0,error
+A2[215]=0x 0,error
+A2[216]=0x 0,error
+A2[217]=0x 0,error
+A2[218]=0x 0,error
+A2[219]=0x 0,error
+A2[220]=0x 0,error
+A2[221]=0x 0,error
+A2[222]=0x 0,error
+A2[223]=0x 0,error
+A2[224]=0x 0,error
+A2[225]=0x 0,error
+A2[226]=0x 0,error
+A2[227]=0x 0,error
+A2[228]=0x 0,error
+A2[229]=0x 0,error
+A2[230]=0x 0,error
+A2[231]=0x 0,error
+A2[232]=0x 0,error
+A2[233]=0x 0,error
+A2[234]=0x 0,error
+A2[235]=0x 0,error
+A2[236]=0x 0,error
+A2[237]=0x 0,error
+A2[238]=0x 0,error
+A2[239]=0x 0,error
+A2[240]=0x 0,error
+A2[241]=0x 0,error
+A2[242]=0x 0,error
+A2[243]=0x 0,error
+A2[244]=0x 0,error
+A2[245]=0x 0,error
+A2[246]=0x 0,error
+write factory passsword ...
+read back A2[119-126] ...
+A2[119]=0xFF,ok
+A2[120]=0xFF,ok
+A2[121]=0xFF,ok
+A2[122]=0xFF,ok
+A2[123]=0xFF,ok
+A2[124]=0xFF,ok
+A2[125]=0xFF,ok
+A2[126]=0xFF,ok
+A2[127]=0x 0,error
+A2[128]=0x 0,error
+A2[129]=0x 0,error
+A2[130]=0x 0,error
+A2[131]=0x 0,error
+A2[132]=0x 0,error
+A2[133]=0x 0,error
+A2[134]=0x 0,error
+A2[135]=0x 0,error
+A2[136]=0x 0,error
+A2[137]=0x 0,error
+A2[138]=0x 0,error
+A2[139]=0x 0,error
+A2[140]=0x 0,error
+A2[141]=0x 0,error
+A2[142]=0x 0,error
+A2[143]=0x 0,error
+A2[144]=0x 0,error
+A2[145]=0x 0,error
+A2[146]=0x 0,error
+A2[147]=0x 0,error
+A2[148]=0x 0,error
+A2[149]=0x 0,error
+A2[150]=0x 0,error
+A2[151]=0x 0,error
+A2[152]=0x 0,error
+A2[153]=0x 0,error
+A2[154]=0x 0,error
+A2[155]=0x 0,error
+A2[156]=0x 0,error
+A2[157]=0x 0,error
+A2[158]=0x 0,error
+A2[159]=0x 0,error
+A2[160]=0x 0,error
+A2[161]=0x 0,error
+A2[162]=0x 0,error
+A2[163]=0x 0,error
+A2[164]=0x 0,error
+A2[165]=0x 0,error
+A2[166]=0x 0,error
+A2[167]=0x 0,error
+A2[168]=0x 0,error
+A2[169]=0x 0,error
+A2[170]=0x 0,error
+A2[171]=0x 0,error
+A2[172]=0x 0,error
+A2[173]=0x 0,error
+A2[174]=0x 0,error
+A2[175]=0x 0,error
+A2[176]=0x 0,error
+A2[177]=0x 0,error
+A2[178]=0x 0,error
+A2[179]=0x 0,error
+A2[180]=0x 0,error
+A2[181]=0x 0,error
+A2[182]=0x 0,error
+A2[183]=0x 0,error
+A2[184]=0x 0,error
+A2[185]=0x 0,error
+A2[186]=0x 0,error
+A2[187]=0x 0,error
+A2[188]=0x 0,error
+A2[189]=0x 0,error
+A2[190]=0x 0,error
+A2[191]=0x 0,error
+A2[192]=0x 0,error
+A2[193]=0x 0,error
+A2[194]=0x 0,error
+A2[195]=0x 0,error
+A2[196]=0x 0,error
+A2[197]=0x 0,error
+A2[198]=0x 0,error
+A2[199]=0x 0,error
+A2[200]=0x 0,error
+A2[201]=0x 0,error
+A2[202]=0x 0,error
+A2[203]=0x 0,error
+A2[204]=0x 0,error
+A2[205]=0x 0,error
+A2[206]=0x 0,error
+A2[207]=0x 0,error
+A2[208]=0x 0,error
+A2[209]=0x 0,error
+A2[210]=0x 0,error
+A2[211]=0x 0,error
+A2[212]=0x 0,error
+A2[213]=0x 0,error
+A2[214]=0x 0,error
+A2[215]=0x 0,error
+A2[216]=0x 0,error
+A2[217]=0x 0,error
+A2[218]=0x 0,error
+A2[219]=0x 0,error
+A2[220]=0x 0,error
+A2[221]=0x 0,error
+A2[222]=0x 0,error
+A2[223]=0x 0,error
+A2[224]=0x 0,error
+A2[225]=0x 0,error
+A2[226]=0x 0,error
+A2[227]=0x 0,error
+A2[228]=0x 0,error
+A2[229]=0x 0,error
+A2[230]=0x 0,error
+A2[231]=0x 0,error
+A2[232]=0x 0,error
+A2[233]=0x 0,error
+A2[234]=0x 0,error
+A2[235]=0x 0,error
+A2[236]=0x 0,error
+A2[237]=0x 0,error
+A2[238]=0x 0,error
+A2[239]=0x 0,error
+A2[240]=0x 0,error
+A2[241]=0x 0,error
+A2[242]=0x 0,error
+A2[243]=0x 0,error
+A2[244]=0x 0,error
+A2[245]=0x 0,error
+A2[246]=0x 0,error
+write 088 user-reading passsword ...
+read back A2[119-126] ...
+A2[119]=0xFF,ok
+A2[120]=0xFF,ok
+A2[121]=0xFF,ok
+A2[122]=0xFF,ok
+A2[123]=0xFF,ok
+A2[124]=0xFF,ok
+A2[125]=0xFF,ok
+A2[126]=0xFF,ok
+A2[127]=0x 0,error
+A2[128]=0x 0,error
+A2[129]=0x 0,error
+A2[130]=0x 0,error
+A2[131]=0x 0,error
+A2[132]=0x 0,error
+A2[133]=0x 0,error
+A2[134]=0x 0,error
+A2[135]=0x 0,error
+A2[136]=0x 0,error
+A2[137]=0x 0,error
+A2[138]=0x 0,error
+A2[139]=0x 0,error
+A2[140]=0x 0,error
+A2[141]=0x 0,error
+A2[142]=0x 0,error
+A2[143]=0x 0,error
+A2[144]=0x 0,error
+A2[145]=0x 0,error
+A2[146]=0x 0,error
+A2[147]=0x 0,error
+A2[148]=0x 0,error
+A2[149]=0x 0,error
+A2[150]=0x 0,error
+A2[151]=0x 0,error
+A2[152]=0x 0,error
+A2[153]=0x 0,error
+A2[154]=0x 0,error
+A2[155]=0x 0,error
+A2[156]=0x 0,error
+A2[157]=0x 0,error
+A2[158]=0x 0,error
+A2[159]=0x 0,error
+A2[160]=0x 0,error
+A2[161]=0x 0,error
+A2[162]=0x 0,error
+A2[163]=0x 0,error
+A2[164]=0x 0,error
+A2[165]=0x 0,error
+A2[166]=0x 0,error
+A2[167]=0x 0,error
+A2[168]=0x 0,error
+A2[169]=0x 0,error
+A2[170]=0x 0,error
+A2[171]=0x 0,error
+A2[172]=0x 0,error
+A2[173]=0x 0,error
+A2[174]=0x 0,error
+A2[175]=0x 0,error
+A2[176]=0x 0,error
+A2[177]=0x 0,error
+A2[178]=0x 0,error
+A2[179]=0x 0,error
+A2[180]=0x 0,error
+A2[181]=0x 0,error
+A2[182]=0x 0,error
+A2[183]=0x 0,error
+A2[184]=0x 0,error
+A2[185]=0x 0,error
+A2[186]=0x 0,error
+A2[187]=0x 0,error
+A2[188]=0x 0,error
+A2[189]=0x 0,error
+A2[190]=0x 0,error
+A2[191]=0x 0,error
+A2[192]=0x 0,error
+A2[193]=0x 0,error
+A2[194]=0x 0,error
+A2[195]=0x 0,error
+A2[196]=0x 0,error
+A2[197]=0x 0,error
+A2[198]=0x 0,error
+A2[199]=0x 0,error
+A2[200]=0x 0,error
+A2[201]=0x 0,error
+A2[202]=0x 0,error
+A2[203]=0x 0,error
+A2[204]=0x 0,error
+A2[205]=0x 0,error
+A2[206]=0x 0,error
+A2[207]=0x 0,error
+A2[208]=0x 0,error
+A2[209]=0x 0,error
+A2[210]=0x 0,error
+A2[211]=0x 0,error
+A2[212]=0x 0,error
+A2[213]=0x 0,error
+A2[214]=0x 0,error
+A2[215]=0x 0,error
+A2[216]=0x 0,error
+A2[217]=0x 0,error
+A2[218]=0x 0,error
+A2[219]=0x 0,error
+A2[220]=0x 0,error
+A2[221]=0x 0,error
+A2[222]=0x 0,error
+A2[223]=0x 0,error
+A2[224]=0x 0,error
+A2[225]=0x 0,error
+A2[226]=0x 0,error
+A2[227]=0x 0,error
+A2[228]=0x 0,error
+A2[229]=0x 0,error
+A2[230]=0x 0,error
+A2[231]=0x 0,error
+A2[232]=0x 0,error
+A2[233]=0x 0,error
+A2[234]=0x 0,error
+A2[235]=0x 0,error
+A2[236]=0x 0,error
+A2[237]=0x 0,error
+A2[238]=0x 0,error
+A2[239]=0x 0,error
+A2[240]=0x 0,error
+A2[241]=0x 0,error
+A2[242]=0x 0,error
+A2[243]=0x 0,error
+A2[244]=0x 0,error
+A2[245]=0x 0,error
+A2[246]=0x 0,error
+****************************************************************************
+Read-back password test, end time : 2021-02-23 09:50:39, elapsed time :  0 h  0 m 7.00 s
+****************************************************************************
+****************************************************************************
+Read-back password test, start time : 2021-02-23 09:59:59
+****************************************************************************
+FEP147_0.1_ES0_088_20210104172228
+no any passsword ...
+read back A2[119-126] ...
+A2[119]=0xFF,ok
+A2[120]=0xFF,ok
+A2[121]=0xFF,ok
+A2[122]=0xFF,ok
+A2[123]=0xFF,ok
+A2[124]=0xFF,ok
+A2[125]=0xFF,ok
+A2[126]=0xFF,ok
+write factory passsword ...
+read back A2[119-126] ...
+A2[119]=0xFF,ok
+A2[120]=0xFF,ok
+A2[121]=0xFF,ok
+A2[122]=0xFF,ok
+A2[123]=0xFF,ok
+A2[124]=0xFF,ok
+A2[125]=0xFF,ok
+A2[126]=0xFF,ok
+write 088 user-reading passsword ...
+read back A2[119-126] ...
+A2[119]=0xFF,ok
+A2[120]=0xFF,ok
+A2[121]=0xFF,ok
+A2[122]=0xFF,ok
+A2[123]=0xFF,ok
+A2[124]=0xFF,ok
+A2[125]=0xFF,ok
+A2[126]=0xFF,ok
+****************************************************************************
+Read-back password test, end time : 2021-02-23 10:00:06, elapsed time :  0 h  0 m 7.00 s
+****************************************************************************

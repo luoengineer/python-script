@@ -1,0 +1,241 @@
+
+****************************************************************************
+SFF-8472 DDMI Alarm and Warning test, start time : 2021-03-26 18:36:00
+****************************************************************************
+Firmware Version : FRW_0.1_20210322090126
+Module ID : 0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF
+A2 Direct raw data: 
+0x25,0xf6,0x39,0xf6,0x25,0xf6,0x39,0xf6,0x6e,0x44,0x95,0x54,0x6e,0x44,0x95,0x54,0x1f,0x57,0x32,0xe0,0x1f,0x57,0x32,0xe0,0xf6,0x78,0x31,0x2d,0xc3,0xc7,0x3d,0xe9,0x7,0xcb,0x0,0x2,0x6,0x31,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+Read Temperature...
+Read A2 96-97(case temperature) = 0x2F,0xB6 
+case temperature : 47.7109375 ¡ãC
+Case Temperature High Alarm Threshold : 37.9609375
+Case Temperature Low Alarm Threshold : 57.9609375
+Case Temperature High Warning Threshold : 37.9609375
+Case Temperature Low Warning Threshold : 57.9609375
+Now case temperature alarm and warning :
+Case Temperature High Alarm. 
+Case Temperature Low Alarm
+Case Temperature High Warning. 
+Case Temperature Low Warning
+Set case temperature high alarm threshold ...
+Set temperature TEMP HIGH ALARM thresold ok
+Case temperature high alarm, test temp high alarm flag ok £¡
+Set case temperature low alarm threshold ...
+Set temperature TEMP LOW ALARM thresold ok
+Case temperature low alarm, test temp low alarm flag ok £¡
+Set case temperature high warning threshold ...
+Set temperature TEMP HIGH WARNING thresold ok
+Case temperature high warning, test temp high warning flag ok £¡
+Set case temperature low warning threshold ...
+Set temperature TEMP LOW WARNING thresold ok
+Case temperature low warning, test temp low warning flag ok £¡
+Read Voltages...
+Read A2 98-99(supply voltage) = 0x81,0xCC 
+Module DDMI supply voltage : 3.3228 V
+Voltage High Alarm Threshold : 2.8228
+Voltage Low Alarm Threshold : 3.8228
+Voltage High Warning Threshold : 2.8228
+Voltage Low Warning Threshold : 3.8228
+Now voltage alarm and warning :
+Voltage High Alarm. 
+Voltage Low Alarm
+Voltage High Warning. 
+Voltage Low Warning
+Set Voltage high alarm threshold ...
+Set voltage VOLT HIGH ALARM threshold 2.8228 ok
+Voltage high alarm, test voltage high alarm flag ok £¡
+Set voltage low alarm threshold ...
+Set voltage VOLT LOW ALARM threshold 3.8228 ok
+Voltage low alarm, test volt low alarm flag ok £¡
+Set Voltage high warning threshold ...
+Set voltage VOLT HIGH WARNING threshold 2.8228 ok
+Voltage high warning, test volt high warning flag ok £¡
+Set voltage low warning threshold ...
+Set voltage VOLT LOW WARNING threshold 3.8228 ok
+Voltage low warning, test volt low warning flag ok £¡
+Read txbias...
+Read A2 A2 100-101(TxBias) = 0x29,0x1C 
+Module DDMI TX bias : 21.048 mA
+Txbias High Alarm Threshold : 16.046
+Txbias Low Alarm Threshold : 26.048
+Txbias High Warning Threshold : 16.046
+Txbias Low Warning Threshold : 26.048
+Now txbias alarm and warning :
+Txbias High Alarm. 
+Txbias Low Alarm
+Txbias High Warning. 
+Txbias Low Warning
+Set Txbias high alarm threshold ...
+Set txbias TXBIAS HIGH ALARM threshold 16.048 ok
+Txbias high alarm, test txbias high alarm flag ok £¡
+Set txbias low alarm threshold ...
+Set txbias TXBIAS LOW ALARM threshold 26.048 ok
+Txbias low alarm, test txbias low alarm flag ok £¡
+Set Txbias high warning threshold ...
+Set txbias TXBIAS HIGH WARNING threshold 16.048 ok
+Txbias high warning, test txbias high warning flag ok £¡
+Set txbias low warning threshold ...
+Set txbias TXBIAS LOW WARNING threshold 26.048 ok
+Txbias low warning, test txbias low warning flag ok £¡
+Read txpower...
+Read A2 A2 100-101(TxBias) = 0x29,0x1C 
+Module DDMI TX bias : 21.048 mA
+Txpower High Alarm Threshold : 8.000018278179686
+Txpower Low Alarm Threshold : 0.999912335446844
+Txpower High Warning Threshold : 7.0000239714225385
+Txpower Low Warning Threshold : 2.0000186540660176
+Now txpower alarm and warning :
+Txpower not High Alarm. 
+Txpower Low Alarm
+Txpower not High Warning. 
+Txpower Low Warning
+Set Txpower high alarm threshold ...
+Set txpower TXPOWER HIGH ALARM threshold 20.048 ok
+Txpower not high alarm, test txpower high alarm flag fail £¡
+Set txpower low alarm threshold ...
+Set txpower TXPOWER LOW ALARM threshold 22.048 fail
+Txpower low alarm, test txpower low alarm flag ok £¡
+Set Txpower high warning threshold ...
+Set txpower TXPOWER HIGH WARNING threshold 20.048 fail
+Txpower not high warning, test txpower high warning flag fail £¡
+Set txpower low warning threshold ...
+Set txpower TXPOWER LOW WARNING threshold 22.048 fail
+Txpower low warning, test txpower low warning flag ok £¡
+A2 Direct restore success.
+
+****************************************************************************
+SFF-8472 DDMI Alarm and Warning test, end time : 2021-03-26 18:36:40, elapsed time :  0 h  0 m 39.00 s
+****************************************************************************
+****************************************************************************
+SFF-8472 DDMI Alarm and Warning test, start time : 2021-03-26 18:38:51
+****************************************************************************
+Firmware Version : FRW_0.1_20210322090126
+Module ID : 0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF
+A2 Direct raw data: 
+0x25,0xf6,0x39,0xf6,0x25,0xf6,0x39,0xf6,0x6e,0x44,0x95,0x54,0x6e,0x44,0x95,0x54,0x1f,0x57,0x32,0xe0,0x1f,0x57,0x32,0xe0,0xf6,0x78,0x31,0x2d,0xc3,0xc7,0x3d,0xe9,0x7,0xcb,0x0,0x2,0x6,0x31,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+Read Temperature...
+Read A2 96-97(case temperature) = 0x1B,0x12 
+case temperature : 27.0703125 ¡ãC
+Case Temperature High Alarm Threshold : 37.9609375
+Case Temperature Low Alarm Threshold : 57.9609375
+Case Temperature High Warning Threshold : 37.9609375
+Case Temperature Low Warning Threshold : 57.9609375
+Now case temperature alarm and warning :
+Case Temperature not High Alarm. 
+Case Temperature Low Alarm
+Case Temperature not High Warning. 
+Case Temperature Low Warning
+Set case temperature high alarm threshold ...
+Set temperature TEMP HIGH ALARM thresold ok
+Case temperature high alarm, test temp high alarm flag ok £¡
+Set case temperature low alarm threshold ...
+Set temperature TEMP LOW ALARM thresold ok
+Case temperature low alarm, test temp low alarm flag ok £¡
+Set case temperature high warning threshold ...
+Set temperature TEMP HIGH WARNING thresold ok
+Case temperature high warning, test temp high warning flag ok £¡
+Set case temperature low warning threshold ...
+Set temperature TEMP LOW WARNING thresold ok
+Case temperature low warning, test temp low warning flag ok £¡
+Read Voltages...
+Read A2 98-99(supply voltage) = 0x00,0x00 
+Module DDMI supply voltage : 0.0 V
+Voltage High Alarm Threshold : 2.8228
+Voltage Low Alarm Threshold : 3.8228
+Voltage High Warning Threshold : 2.8228
+Voltage Low Warning Threshold : 3.8228
+Now voltage alarm and warning :
+Voltage not High Alarm. 
+Voltage Low Alarm
+Voltage not High Warning. 
+Voltage Low Warning
+Set Voltage high alarm threshold ...
+****************************************************************************
+SFF-8472 DDMI Alarm and Warning test, start time : 2021-03-26 18:50:55
+****************************************************************************
+Firmware Version : FRW_0.1_20210322090126
+Module ID : 0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF
+A2 Direct raw data: 
+0x11,0x12,0x25,0x12,0x11,0x12,0x25,0x12,0x6e,0x44,0x95,0x54,0x6e,0x44,0x95,0x54,0x1f,0x57,0x32,0xe0,0x1f,0x57,0x32,0xe0,0xf6,0x78,0x31,0x2d,0xc3,0xc7,0x3d,0xe9,0x7,0xcb,0x0,0x2,0x6,0x31,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+Read Temperature...
+Read A2 96-97(case temperature) = 0x2D,0xAD 
+case temperature : 45.67578125 ¡ãC
+Case Temperature High Alarm Threshold : 17.0703125
+Case Temperature Low Alarm Threshold : 37.0703125
+Case Temperature High Warning Threshold : 17.0703125
+Case Temperature Low Warning Threshold : 37.0703125
+Now case temperature alarm and warning :
+Case Temperature High Alarm. 
+Case Temperature not Low Alarm
+Case Temperature High Warning. 
+Case Temperature not Low Warning
+Set case temperature high alarm threshold ...
+Set temperature TEMP HIGH ALARM thresold ok
+Case temperature high alarm, test temp high alarm flag ok £¡
+Set case temperature low alarm threshold ...
+Set temperature TEMP LOW ALARM thresold ok
+Case temperature low alarm, test temp low alarm flag ok £¡
+Set case temperature high warning threshold ...
+Set temperature TEMP HIGH WARNING thresold ok
+Case temperature high warning, test temp high warning flag ok £¡
+Set case temperature low warning threshold ...
+Set temperature TEMP LOW WARNING thresold ok
+Case temperature low warning, test temp low warning flag ok £¡
+Read Voltages...
+Read A2 98-99(supply voltage) = 0x00,0x00 
+Module DDMI supply voltage : 0.0 V
+Voltage High Alarm Threshold : 2.8228
+Voltage Low Alarm Threshold : 3.8228
+Voltage High Warning Threshold : 2.8228
+Voltage Low Warning Threshold : 3.8228
+Now voltage alarm and warning :
+Voltage not High Alarm. 
+Voltage Low Alarm
+Voltage not High Warning. 
+Voltage Low Warning
+Set Voltage high alarm threshold ...
+****************************************************************************
+SFF-8472 DDMI Alarm and Warning test, start time : 2021-03-26 18:52:07
+****************************************************************************
+Firmware Version : FRW_0.1_20210322090126
+Module ID : 0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF0xFF
+A2 Direct raw data: 
+0x23,0xad,0x37,0xad,0x23,0xad,0x37,0xad,0x6e,0x44,0x95,0x54,0x6e,0x44,0x95,0x54,0x1f,0x57,0x32,0xe0,0x1f,0x57,0x32,0xe0,0xf6,0x78,0x31,0x2d,0xc3,0xc7,0x3d,0xe9,0x7,0xcb,0x0,0x2,0x6,0x31,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+Read Temperature...
+Read A2 96-97(case temperature) = 0x2D,0x92 
+case temperature : 45.5703125 ¡ãC
+Case Temperature High Alarm Threshold : 35.67578125
+Case Temperature Low Alarm Threshold : 55.67578125
+Case Temperature High Warning Threshold : 35.67578125
+Case Temperature Low Warning Threshold : 55.67578125
+Now case temperature alarm and warning :
+Case Temperature High Alarm. 
+Case Temperature Low Alarm
+Case Temperature High Warning. 
+Case Temperature Low Warning
+Set case temperature high alarm threshold ...
+Set temperature TEMP HIGH ALARM thresold ok
+Case temperature high alarm, test temp high alarm flag ok £¡
+Set case temperature low alarm threshold ...
+Set temperature TEMP LOW ALARM thresold ok
+Case temperature low alarm, test temp low alarm flag ok £¡
+Set case temperature high warning threshold ...
+Set temperature TEMP HIGH WARNING thresold ok
+Case temperature high warning, test temp high warning flag ok £¡
+Set case temperature low warning threshold ...
+Set temperature TEMP LOW WARNING thresold ok
+Case temperature low warning, test temp low warning flag ok £¡
+Read Voltages...
+Read A2 98-99(supply voltage) = 0x00,0x00 
+Module DDMI supply voltage : 0.0 V
+Voltage High Alarm Threshold : 2.8228
+Voltage Low Alarm Threshold : 3.8228
+Voltage High Warning Threshold : 2.8228
+Voltage Low Warning Threshold : 3.8228
+Now voltage alarm and warning :
+Voltage not High Alarm. 
+Voltage Low Alarm
+Voltage not High Warning. 
+Voltage Low Warning
+Set Voltage high alarm threshold ...
