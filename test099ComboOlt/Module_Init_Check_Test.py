@@ -12,7 +12,7 @@ import os
 
 #Test times
 #wr_and_rd_times  = 5
-run_time_second = 3600 * 8  # unit : s
+run_time_second = 3600*12  # unit : s
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -179,6 +179,39 @@ def read_B2_Status():
         f.write('Read B2 110 fail.')
         return 'fail'
 
+
+def cmd_mcu_i2c_read(drv_addr, reg_addr, reg_len):
+    command_str = 'MCU_I2C_READ(' + str(drv_addr) + ',' \
+                  + str(reg_addr) + ',' \
+                  + str(reg_len) + ')'
+    command_str = bytes(command_str, encoding="utf8")
+    strCmdIn = create_string_buffer(command_str)
+    strCmdOutBuff = ctypes.c_ubyte * 32
+    strCmdOut = strCmdOutBuff()
+    Res = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
+    if 0 == Res:
+        return 'true',strCmdOut
+    else:
+        return 'fail',strCmdOut
+
+def readOnet1131Reg17():
+    Sfp_Factory_Pwd_Entry(user_password_type)
+    time.sleep(1)
+    cmd_mcu_i2c_read(0x10, 0x11, 1)
+
+    strCmdOutBuff = ctypes.c_ubyte * 8
+    strCmdOut = strCmdOutBuff()
+    Res, strCmdOut = cmd_mcu_i2c_read(0x10, 0x11, 1)
+    if Res == 'true':
+        for item in range(len(strCmdOut)):
+            print("{}".format(chr(strCmdOut[item])), end='')
+            f.write(chr(strCmdOut[item]))
+    else:
+        print('Read onet1131 reg 17 fail.')
+        f.write('Read onet1131 reg 17 fail.')
+        return 'fail'
+
+
 #########################################################
 #               Open USB Device
 #########################################################
@@ -199,7 +232,7 @@ time.sleep(1)
 #########################################################
 # Read firmware version
 strCmdIn = create_string_buffer(b'MCU_GET_VERSION()')
-strCmdOutBuff = ctypes.c_ubyte*64
+strCmdOutBuff = ctypes.c_ubyte*128
 strCmdOut = strCmdOutBuff()
 strFwVer = []
 retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
@@ -231,7 +264,7 @@ print("Firmware Version : {}".format(testTitle))
 f.write('\nFirmware Version : '+testTitle)
 
 strCmdIn = create_string_buffer(b'MCU_GET_TABLE(base,3,4,16)')
-strCmdOutBuff = ctypes.c_ubyte * 64
+strCmdOutBuff = ctypes.c_ubyte * 128
 strCmdOut = strCmdOutBuff()
 strModuleId = []
 retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
@@ -264,6 +297,8 @@ while time.time() < endTick:
     time.sleep(2)
 
     round_error_times = 0
+
+    '''   
     ret = read_A2_92()
     if 'fail'== ret:
         error_times_statistics.append(str(total_times_count))
@@ -299,17 +334,23 @@ while time.time() < endTick:
         error_times_statistics.append('Not read B2[100-101], i2c fail')
         round_error_times += 1
     #    os.system('.\Driver_GN25L96_Init_Test.py')
-        
+    '''
     #read_ddmi_TxPower()
+    ret = readOnet1131Reg17()
+    if 'fail' == ret:
+        error_times_statistics.append(str(total_times_count))
+        error_times_statistics.append('Not read onet1131 reg, i2c fail')
+        round_error_times += 1
+
     if round_error_times >= 1:
         error_times_count += 1
     total_times_count += 1
 
 if len(error_times_statistics) > 0:
-    #print("\n{}".format(error_times_statistics))
-    for item in range(len(error_times_statistics)):
-        print("\nError happen in Round {} ".format(len(error_times_statistics)))
-        f.write("\n\nError happen in Round {} ".format(len(error_times_statistics)))
+
+    for item in range(len(error_times_statistics)//2):
+        print("\nError happen in Round {} ".format(item))
+        f.write("\n\nError happen in Round {} ".format(item))
     print("\nTotal happen {} times error ".format(error_times_count))
     f.write("\n\nTotal happen {} times error ".format(error_times_count))
 else:
