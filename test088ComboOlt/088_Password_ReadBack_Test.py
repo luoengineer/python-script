@@ -145,8 +145,8 @@ time.sleep(1)
 # write user password to A2[123-126] and read-back A2[119-126]
 #########################################################
 #write user default password
-print("\nwrite 088 user-reading passsword ...")
-f.write("\nwrite 088 user-reading passsword ...")
+print("\nwrite 088 user passsword ...")
+f.write("\nwrite 088 user passsword ...")
 Sfp_User_088Pwd_Entry()
 print("\nread back A2[119-126] ...")
 f.write("\nread back A2[119-126] ...")
