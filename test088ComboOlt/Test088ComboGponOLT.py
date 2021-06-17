@@ -98,10 +98,11 @@ print("\n***********************************************************************
 print("COMBO PON OLT test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\COMBO PON OLT test, start time : {}".format(dateTime))
+f.write("\nCOMBO PON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f.close()
 
 if True == Driver_GN25L96_TEST:
     os.system(".\Driver_GN25L96_Test.py")
@@ -134,6 +135,7 @@ if True == Password_READ_BACK_TEST:
 if True == User_Encryption_Rule_TEST:
     os.system('.\SFP+_088_Encryption_Rule_Test.py')
 
+f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
