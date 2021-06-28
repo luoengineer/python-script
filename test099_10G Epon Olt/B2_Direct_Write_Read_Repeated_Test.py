@@ -79,6 +79,7 @@ strFwVer = ''.join(strFwVer)
 #                 Open File
 #########################################################
 startTick = time.time()
+#dateTime = time.strptime(time.asctime())
 dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
@@ -86,23 +87,23 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("A2 Direct Write and Read stress test, start time : {}".format(dateTime))
+print("B2 Direct Write and Read stress test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nA2 Direct Write and Read stress test, start time : {}".format(dateTime))
+f.write("\nB2 Direct Write and Read stress test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
 
-A2RawDataBuff = ctypes.c_ubyte*96
-A2RawReadByte = A2RawDataBuff()
-f.write("\nA2 Direct raw data: \n")
+B2RawDataBuff = ctypes.c_ubyte*96
+B2RawReadByte = B2RawDataBuff()
+f.write("B2 Direct raw data: \n")
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 0, 96, B2RawReadByte)
 if 0 == Res:
     for item in range(96):
         #print("0x{0:X}".format(randomReadByte[i1]), end=' ')
-        f.write(str(hex(A2RawReadByte[item]))+',')
+        f.write(str(hex(B2RawReadByte[item]))+',')
 else:
     f.write('read raw data fail.'+'\n')
     print('read raw data fail.' + '\n')
@@ -121,16 +122,15 @@ for times in range(wr_and_rd_times):
     time.sleep(1)
 
    
-    A2WriteDataBuff = [0x00] * 96
-    A2WriteDataBuff = random_int_list(0, 256, 96)
-    A2WriteDataBuff[92] = 0
-    A2WriteByte = (c_ubyte * 96)(*A2WriteDataBuff)
+    B2WriteDataBuff = [0x00] * 96
+    B2WriteDataBuff = random_int_list(0, 256, 96)
+    B2WriteByte = (c_ubyte * 96)(*B2WriteDataBuff)
 
     f.write('write :\n')
     for item in range(96):
-        f.write(str(hex(A2WriteByte[item]))+',')
+        f.write(str(hex(B2WriteByte[item]))+',')
     f.write('\n')
-    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2WriteByte))
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 0, 96, byref(B2WriteByte))
     time.sleep(1)
 
     testEvb.AteAllPowerOff()
@@ -139,9 +139,9 @@ for times in range(wr_and_rd_times):
     testEvb.AteAllPowerOn()
     time.sleep(1)
 
-    A2ReadDataBuff = ctypes.c_ubyte * 96
-    randomReadByte = A2ReadDataBuff()
-    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, randomReadByte)
+    B2ReadDataBuff = ctypes.c_ubyte * 96
+    randomReadByte = B2ReadDataBuff()
+    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 0, 96, randomReadByte)
 
     f.write('read :\n')
     for item in range(96):
@@ -151,53 +151,53 @@ for times in range(wr_and_rd_times):
     wr_and_rd_success = 0
     
     for item in range(96):
-        if randomReadByte[item] == A2WriteByte[item]:
+        if randomReadByte[item] == B2WriteByte[item]:
             wr_and_rd_success += 1
 
 
     if wr_and_rd_success == 96:
         totalSuccess += 1
-        f.write('Round.{}: A2 write data equal read data.'.format(times)+'\n\n')
-        print("Round.{} A2 write data equal read data.".format(times))
+        f.write('Round.{}: B2 write data equal read data.'.format(times)+'\n\n')
+        print("Round.{} B2 write data equal read data.".format(times))
     else:
-        f.write('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
-        print('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
+        f.write('Round.{}: B2 write data not equal read data.'.format(times)+'\n\n')
+        print('Round.{}: B2 write data not equal read data.'.format(times)+'\n\n')
 
     testEvb.AteAllPowerOff()
     time.sleep(1)
 
 if wr_and_rd_times == totalSuccess:
-    print('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
-    f.write('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
+    print('B2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
+    f.write('B2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
-    print('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
-    f.write('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
+    print('B2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
+    f.write('B2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
 
-#restore A2 Direct
+#restore B2 Direct
 testEvb.AteAllPowerOn()
 time.sleep(2)
 Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
-testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2RawReadByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 0, 96, byref(B2RawReadByte))
 time.sleep(1)
 A2ReadDataBuff = ctypes.c_ubyte * 96
-randomReadByte = A2ReadDataBuff()
-testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, randomReadByte)
-if True == operator.eq(A2RawDataBuff, A2ReadDataBuff):
-    f.write('A2 Direct restore success.' + '\n')
-    print("A2 Direct restore success.")
+randomReadByte = B2ReadDataBuff()
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 0, 96, randomReadByte)
+if True == operator.eq(B2RawDataBuff, B2ReadDataBuff):
+    f.write('B2 Direct restore success.' + '\n')
+    print("B2 Direct restore success.")
 else:
-    f.write('A2 Direct restore fail.' + '\n')
-    print("A2 Direct restore fail.")
+    f.write('B2 Direct restore fail.' + '\n')
+    print("B2 Direct restore fail.")
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("A2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("B2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nA2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\nB2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
