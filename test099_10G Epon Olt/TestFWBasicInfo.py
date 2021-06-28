@@ -3,13 +3,14 @@ from ctypes import *
 import time
 import random
 import operator
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
+from cmdServ import *
 from classTestEvb import *
 import sys
-import os
 
-
-
+#==============================================================================
+# Test times
+#==============================================================================
+wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -18,18 +19,18 @@ user_password_type = is_other_Module
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
 devSfpChannel = 2
 
-module_adc_chn_nums = 7
-module_adjust_chn_nums = 8
-module_dac_chn_nums = 2
-module_base_talbe_nums = 4
-module_drv_table_nums = 1
-module_lutable_nums = 4
+module_adc_chn_nums = 11+1
+module_adjust_chn_nums = 9+1
+module_dac_chn_nums = 3+1
+module_base_talbe_nums = 4+1
+module_drv_table_nums = 1+1
+module_lutable_nums = 11+1
 
 #########################################################
 #               create object
@@ -136,7 +137,8 @@ def mcu_get_lut(lutable_index):
             print("{}".format(chr(strCmdOut[item])), end='')
             f.write(chr(strCmdOut[item]))
     else:
-        print("Get lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
+        print("\nGet lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
+        f.write("\nGet lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
 
 def mcu_get_driver_table(drv_table_index):
     command_str = 'MCU_GET_TABLE(driver,' + str(drv_table_index) + ',0,128)'
@@ -198,10 +200,10 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("GPON OLT Basic configuration test, start time : {}".format(dateTime))
+print("OLT Basic configuration test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nGPON OLT Basic configuration test, start time : {}".format(dateTime))
+f.write("\OLT Basic configuration test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -246,16 +248,38 @@ for item in range(module_drv_table_nums):
 
 print("\n")
 f.write('\n\n')
+#lut_data = ctypes.c_ubyte*128
+#lut_data_p = lut_data()
+lut_data = []
 for item in range(module_lutable_nums):
-    mcu_get_lut(item)
+    ret, lut_data = cmd_read_lut(item, 0, 128)
+    if 'OK' == ret:
+        print('\nMCU_GET_TABLE lut {:d} :'.format(item))
+        f.write('\nMCU_GET_TABLE lut {:d} :'.format(item))
+        for item in range(len(lut_data)):
+            print("0x{:02X}".format(lut_data[item]), end=',')
+            f.write("0x{:02X}".format(lut_data[item]))
+    else:
+        print("\nread lut {} table fail".format(item))
+        f.write("\nread lut {} table fail".format(item))
+
+print("\n test writing lut")
+f.write("\n test writing lut")
+lut_test_data = '1,2,3,4,5,6,7,8,9,10'
+for item in range(module_lutable_nums):
+    if 'OK' == cmd_write_lut(item, 0, lut_test_data):
+        print("lut {} wirting ok!".format(item))
+    else:
+        print("lut {} writing fail!".format(item))
+
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("GPON OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nGPON OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
