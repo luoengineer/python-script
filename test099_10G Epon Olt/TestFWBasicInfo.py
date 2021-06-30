@@ -203,7 +203,7 @@ print("\n***********************************************************************
 print("OLT Basic configuration test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\OLT Basic configuration test, start time : {}".format(dateTime))
+f.write("\nOLT Basic configuration test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -211,6 +211,7 @@ f.write('\n'+testTitle)
 #########################################################
 #                 MCU Get ADC
 #########################################################
+'''
 print("\n")
 f.write('\n\n')
 for item in range(module_adc_chn_nums):
@@ -232,9 +233,9 @@ print("\n")
 f.write('\n\n')
 for item in range(module_dac_chn_nums):
     mcu_get_dac(item)
-
+'''
 #########################################################
-#               Lut  check
+#               Data Table Check
 #########################################################
 print("\n")
 f.write('\n\n')
@@ -250,28 +251,71 @@ print("\n")
 f.write('\n\n')
 #lut_data = ctypes.c_ubyte*128
 #lut_data_p = lut_data()
-lut_data = []
-for item in range(module_lutable_nums):
-    ret, lut_data = cmd_read_lut(item, 0, 128)
+lut_tmp_data = []
+lut_raw_data = []
+#get raw lut data
+print("\nRead lut raw data ...")
+f.write("\nRead lut raw data ...")
+for lut_index in range(module_lutable_nums):
+    lut_raw_data.append([])
+    ret, lut_tmp_data = cmd_read_lut(lut_index, 0, 128)
     if 'OK' == ret:
-        print('\nMCU_GET_TABLE lut {:d} :'.format(item))
-        f.write('\nMCU_GET_TABLE lut {:d} :'.format(item))
-        for item in range(len(lut_data)):
-            print("0x{:02X}".format(lut_data[item]), end=',')
-            f.write("0x{:02X}".format(lut_data[item]))
+        print('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
+        f.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
+        #print("data size : {}".format(len(lut_tmp_data)))
+        for item in range(len(lut_tmp_data)):
+            print("0x{:02X}".format(lut_tmp_data[item]), end=',')
+            f.write("0x{:02X},".format(lut_tmp_data[item]))
+            lut_raw_data[lut_index].append(lut_tmp_data[item])
     else:
-        print("\nread lut {} table fail".format(item))
-        f.write("\nread lut {} table fail".format(item))
+        print("\nread lut {} table fail".format(lut_index))
+        f.write("\nread lut {} table fail".format(lut_index))
 
-print("\n test writing lut")
-f.write("\n test writing lut")
-lut_test_data = '1,2,3,4,5,6,7,8,9,10'
-for item in range(module_lutable_nums):
-    if 'OK' == cmd_write_lut(item, 0, lut_test_data):
-        print("lut {} wirting ok!".format(item))
+#write test data to lut
+print("\n test writing lut ...")
+f.write("\n\ntest writing lut ...")
+lut_test_data = [1,2,3,4,5,6,7,8,9,10]
+for lut_index in range(module_lutable_nums):
+    if 'OK' == cmd_write_lut(lut_index, 0, lut_test_data):
+        print("lut {} wirting data ok!".format(lut_index))
+        f.write("\nlut {} wirting data ok!".format(lut_index))
     else:
-        print("lut {} writing fail!".format(item))
+        print("lut {} writing data fail!".format(lut_index))
+        f.write("\nlut {} writing data fail!".format(lut_index))
 
+testEvb.AteAllPowerOff()
+time.sleep(1)
+testEvb.AteAllPowerOn()
+time.sleep(1)
+Sfp_Factory_Pwd_Entry(user_password_type)
+time.sleep(1)
+#readback check if not writed
+lut_readback_data = []
+for lut_index in range(module_lutable_nums):
+    ret, lut_readback_data = cmd_read_lut(lut_index, 0, 10)
+    #print(lut_readback_data)
+    if 'OK' == ret and lut_readback_data == lut_test_data:
+        print("lut {} test wrting ok!".format(lut_index))
+        f.write("\nlut {} test wirting ok!".format(lut_index))
+    else:
+        print("lut {} test wrting fail!".format(lut_index))
+        f.write("\nlut {} test wirting fail!".format(lut_index))
+
+
+#restore lut raw data
+print("\nRestore lut raw data ...")
+f.write("\n\nRestore lut raw data ...")
+for lut_index in range(len(lut_raw_data)):
+#for lut_index in lut_raw_data:
+    #lut_tmp_data = lut_raw_data[lut_index].copy()
+    for lut_value in range(len(lut_raw_data[lut_index])):
+        lut_tmp_data[lut_value] = lut_raw_data[lut_index][lut_value]
+    if 'OK' == cmd_write_lut(lut_index, 0, lut_tmp_data):
+        print("lut {} wirting ok!".format(lut_index))
+        f.write("\nlut {} wirting ok!".format(lut_index))
+    else:
+        print("lut {} writing fail!".format(lut_index))
+        f.write("\nlut {} writing fail!".format(lut_index))
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
@@ -279,7 +323,7 @@ print("\n***********************************************************************
 print("OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\nOLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
