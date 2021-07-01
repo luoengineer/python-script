@@ -7,7 +7,9 @@ from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
 from classTestEvb import *
 import sys
 
-#Test times
+#==============================================================================
+# Test times
+#==============================================================================
 wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
@@ -17,7 +19,7 @@ user_password_type = is_088_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
