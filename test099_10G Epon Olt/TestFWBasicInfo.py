@@ -258,7 +258,7 @@ print("\nRead lut raw data ...")
 f.write("\nRead lut raw data ...")
 for lut_index in range(module_lutable_nums):
     lut_raw_data.append([])
-    ret, lut_tmp_data = cmd_read_lut(lut_index, 0, 128)
+    ret, lut_tmp_data = cmd_read_table('lut', lut_index, 0, 128)
     if 'OK' == ret:
         print('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
         f.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
@@ -276,7 +276,7 @@ print("\n test writing lut ...")
 f.write("\n\ntest writing lut ...")
 lut_test_data = [1,2,3,4,5,6,7,8,9,10]
 for lut_index in range(module_lutable_nums):
-    if 'OK' == cmd_write_lut(lut_index, 0, lut_test_data):
+    if 'OK' == cmd_write_table('lut', lut_index, 0, lut_test_data):
         print("lut {} wirting data ok!".format(lut_index))
         f.write("\nlut {} wirting data ok!".format(lut_index))
     else:
@@ -292,7 +292,7 @@ time.sleep(1)
 #readback check if not writed
 lut_readback_data = []
 for lut_index in range(module_lutable_nums):
-    ret, lut_readback_data = cmd_read_lut(lut_index, 0, 10)
+    ret, lut_readback_data = cmd_read_table('lut', lut_index, 0, 10)
     #print(lut_readback_data)
     if 'OK' == ret and lut_readback_data == lut_test_data:
         print("lut {} test wrting ok!".format(lut_index))
@@ -310,7 +310,7 @@ for lut_index in range(len(lut_raw_data)):
     #lut_tmp_data = lut_raw_data[lut_index].copy()
     for lut_value in range(len(lut_raw_data[lut_index])):
         lut_tmp_data[lut_value] = lut_raw_data[lut_index][lut_value]
-    if 'OK' == cmd_write_lut(lut_index, 0, lut_tmp_data):
+    if 'OK' == cmd_write_table('lut', lut_index, 0, lut_tmp_data):
         print("lut {} wirting ok!".format(lut_index))
         f.write("\nlut {} wirting ok!".format(lut_index))
     else:
