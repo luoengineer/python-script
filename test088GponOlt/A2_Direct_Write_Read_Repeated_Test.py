@@ -7,8 +7,10 @@ from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
 from classTestEvb import *
 import sys
 
+#==============================================================================
 #Test times
-wr_and_rd_times  = 5
+#==============================================================================
+wr_and_rd_times  = 1000
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -17,7 +19,7 @@ user_password_type = is_088_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -161,14 +163,16 @@ for times in range(wr_and_rd_times):
         print("Round.{} A2 write data equal read data.".format(times))
     else:
         f.write('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
-		print('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
+        print('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
 
     testEvb.AteAllPowerOff()
     time.sleep(1)
 
 if wr_and_rd_times == totalSuccess:
+    print('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
+    print('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
 

@@ -1,9 +1,10 @@
 import ctypes
 from ctypes import *
 import time
-from cmdServ import cmdservdll, devUsbIndex, devSffChannel
-from cmdServ import Sfp_Factory_Pwd_Entry, AteAllPowerOn, AteAllPowerOff, openUsbDevice
-import math
+from cmdServ import *
+from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
+from classTestEvb import *
+import sys
 
 #Test times
 wr_and_rd_times  = 2
@@ -17,8 +18,14 @@ ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
 XfpI2dAddr = [0xA0,0xA4]
 
-#load dll
-objdll = ctypes.cdll.LoadLibrary(".\ATEAPI.dll")
+devUsbIndex = 0
+devSffChannel = 1
+devSfpChannel = 2
+
+#########################################################
+#               create object
+#########################################################
+testEvb = cTestEvb(devUsbIndex)
 
 
 txPower08uWAll = {48:0x00, 49:0x00, 50:0x00, 51:0x00, 52:0x00, 53:0x00, 54:0x00, 55:0x00, 108:0x00, 109:0x00}
@@ -31,7 +38,7 @@ def txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr):
 #def txpower08uwFlagAssert(*devParams)
     A2ReadDatBuf = ctypes.c_ubyte*1
     A2Read = A2ReadDatBuf()
-    Ret = objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr, 113, 1, A2Read)
+    Ret = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr, 113, 1, A2Read)
     if 0 == Ret:
         print('A2[{}]=0x{:0>2X}'.format(113, A2Read[0]))
         print('TX Power High Alarm（0.8uW）flag: {}'.format((A2Read[0]&0x02)>>1))
@@ -41,7 +48,7 @@ def txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr):
         f.write('\nTX Power Low Alarm（0.8uW）flag: {}'.format((A2Read[0] & 0x01)))
     else:
         print("{}".format(Ret))
-    Ret = objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr, 117, 1, A2Read)
+    Ret = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr, 117, 1, A2Read)
     if 0 == Ret:
         print('A2[{}]=0x{:0>2X}'.format(117, A2Read[0]))
         print('TX Power High Warning（0.8uW）flag: {}'.format((A2Read[0] & 0x02) >> 1))
@@ -59,12 +66,12 @@ def txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr):
 #               Open USB Device
 #########################################################
 #TODO: How to config several usb device
-openUsbDevice(devUsbIndex)
+testEvb.openUsbDevice()
 
 #########################################################
 #               Slot Power On
 #########################################################
-AteAllPowerOn(devUsbIndex)
+testEvb.AteAllPowerOn()
 time.sleep(2)
 #########################################################
 #               Entry Password
@@ -123,12 +130,12 @@ f.write('\n\nRead 0.8uW Txpowr from A2 108-109')
 A2ReadTxDataBuff = ctypes.c_ubyte*2
 A2ReadTxByte = A2ReadTxDataBuff()
 Res = 0xFF
-Res = objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 108, 2, A2ReadTxByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 108, 2, A2ReadTxByte)
 if 0 == Res:
     print('A2[{}]=0x{:0>2X}, A2[{}]=0x{:0>2X}'.format(108, A2ReadTxByte[0], 109, A2ReadTxByte[1]))
     f.write('\nA2[{}]=0x{:0>2X}, A2[{}]=0x{:0>2X}'.format(108, A2ReadTxByte[0], 109, A2ReadTxByte[1]))
 if 0 == A2ReadTxByte[0] and 0 == A2ReadTxByte[1]:
-    txPower = '-Inf'
+    txPower = '-40'
     print("txpower is {} uW".format(txPower))
     f.write("\ntxpower is {} uW".format(txPower))
 else:
@@ -143,7 +150,7 @@ f.write('\n\nRead A2 48-55')
 A2ReadDataBuff = ctypes.c_ubyte*8
 A2ReadByte = A2ReadDataBuff()
 Res = 0xFF
-Res = objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 48, 8, A2ReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 48, 8, A2ReadByte)
 if 0 == Res:
     #hold raw data
     A2Tx08uWThresholdArray = list(A2ReadByte)
@@ -200,7 +207,7 @@ print("\nModify Txpower (0.8uW ) High alarm threshold. High alarm flag will be '
 f.write("\n\nModify Txpower (0.8uW ) High alarm threshold'. High alarm flag will be '1'")
 i2cWriteBuf = c_ubyte * 2
 i2dWriteByte = i2cWriteBuf(A2Tx08uWLowAlarm[0], A2Tx08uWLowAlarm[1])
-Res = objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 48, 2, byref(i2dWriteByte))
+Res = testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 48, 2, byref(i2dWriteByte))
 if 0 == Res:
     time.sleep(1)
     txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr[1])
@@ -210,7 +217,7 @@ else:
 print("\nModify Txpower (0.8uW ) Low alarm threshold. Low alarm flag will be '1'")
 f.write("\n\nModify Txpower (0.8uW ) Low alarm threshold. Low alarm flag will be '1'")
 i2dWriteByte = i2cWriteBuf(A2Tx08uWHighAlarm[0], A2Tx08uWHighAlarm[1])
-Res = objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 50, 2, byref(i2dWriteByte))
+Res = testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 50, 2, byref(i2dWriteByte))
 if 0 == Res:
     time.sleep(1)
     txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr[1])
@@ -221,7 +228,7 @@ print("\nModify Txpower (0.8uW ) High warning threshold. High warning will be '1
 f.write("\n\nModify Txpower (0.8uW ) High warning threshold. High warning will be '1'")
 i2cWriteBuf = c_ubyte * 2
 i2dWriteByte = i2cWriteBuf(A2Tx08uWLowWarning[0], A2Tx08uWLowWarning[1])
-Res = objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 52, 2, byref(i2dWriteByte))
+Res = testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 52, 2, byref(i2dWriteByte))
 if 0 == Res:
     time.sleep(1)
     txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr[1])
@@ -231,7 +238,7 @@ else:
 print("\nModify Txpower (0.8uW ) Low warning threshold. Low warning flag will be '1'")
 f.write("\n\nModify Txpower (0.8uW ) Low warning threshold. Low warning flag will be '1'")
 i2dWriteByte = i2cWriteBuf(A2Tx08uWHighWarning[0], A2Tx08uWHighWarning[1])
-Res = objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 54, 2, byref(i2dWriteByte))
+Res = testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 54, 2, byref(i2dWriteByte))
 if 0 == Res:
     time.sleep(1)
     txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr[1])
@@ -242,7 +249,7 @@ else:
 i2cWriteBuf = ctypes.c_ubyte*8
 A2WriteByte = i2cWriteBuf(A2Tx08uWHighAlarm[0],A2Tx08uWHighAlarm[1],A2Tx08uWLowAlarm[0],A2Tx08uWLowAlarm[1],
                           A2Tx08uWHighWarning[0],A2Tx08uWHighWarning[1],A2Tx08uWLowWarning[0],A2Tx08uWLowWarning[1])
-objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 48, 8, A2WriteByte)
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 48, 8, A2WriteByte)
 time.sleep(1)
 print("\nRestore A2 txpower(0.8uW) threshold ")
 f.write("\n\nRestore A2 txpower(0.8uW) threshold ")
@@ -255,7 +262,7 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\ntx(0.8uW) alarm and warning test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
-AteAllPowerOff(devUsbIndex)
+testEvb.AteAllPowerOff()
 
 f.close()
 

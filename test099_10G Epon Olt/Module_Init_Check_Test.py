@@ -1,12 +1,9 @@
-
 import ctypes
 from ctypes import *
 import time
-import random
-from classTestEvb import *
 import sys
-import math
-import os
+from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry
+from classTestEvb import *
 
 #Test times
 #wr_and_rd_times  = 5
@@ -15,8 +12,8 @@ run_time_second = 30 * 1  # unit : s
 is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
-_ateapidll = ctypes.windll.LoadLibrary(".\ATEAPI.dll")
-_cmdservdll = ctypes.windll.LoadLibrary(".\SuperCommand.dll")
+
+
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
@@ -61,7 +58,7 @@ def read_rxpower():
     print("Read A0 104-105(Rxpower), 099 must be 0x0000  ")
     f.write("Read A0 104-105(Rxpower), 099 must be 0x0000 \n")
     Res = 0xFF
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 104, 2, A0RawReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 104, 2, A0RawReadByte)
     if 0 == Res:
         if (0 == A0RawReadByte[0]) and (0 == A0RawReadByte[1]):
             print(
@@ -86,7 +83,7 @@ def read_ddmi_case_temperature():
     A0RawDataBuff = ctypes.c_ubyte * 2
     A0RawReadByte = A0RawDataBuff()
     Res = 0xFF
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 96, 2, A0RawReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 96, 2, A0RawReadByte)
     if 0 == Res:
         print("Read A0 96-97(case temperature) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
         f.write("\nRead A0 96-97(case temperature) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
@@ -103,7 +100,7 @@ def read_ddmi_voltage():
     A0RawDataBuff = ctypes.c_ubyte * 2
     A0RawReadByte = A0RawDataBuff()
     Res = 0xFF
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 98, 2, A0RawReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 98, 2, A0RawReadByte)
     if 0 == Res:
         print("Read A0 98-99(supply voltage) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
         f.write("\nRead A0 98-99(supply voltage) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
@@ -124,7 +121,7 @@ def read_ddmi_Txbias():
     A0RawDataBuff = ctypes.c_ubyte * 2
     A0RawReadByte = A0RawDataBuff()
     Res = 0xFF
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 100, 2, A0RawReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 100, 2, A0RawReadByte)
     if 0 == Res:
         print("Read A0 100-101(TxBias) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
         f.write("\nRead A0 A0 100-101(TxBias) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
@@ -146,7 +143,7 @@ def read_ddmi_TxPower():
     A0RawDataBuff = ctypes.c_ubyte * 2
     A0RawReadByte = A0RawDataBuff()
     Res = 0xFF
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 102, 2, A0RawReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 102, 2, A0RawReadByte)
     if 0 == Res:
         print("Read A0 102-103(TxPower) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
         f.write("\nRead A0 102-103(TxPower) = 0x{:0>2X},0x{:0>2X} ".format(A0RawReadByte[0], A0RawReadByte[1]))
@@ -165,7 +162,7 @@ def read_A0_Status():
     print("Read A0 110: ")
     f.write("\nRead A0 110: \n")
     Res = 0xFF
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 110, 1, A0RawReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, XfpI2cAddr[0], 110, 1, A0RawReadByte)
     if 0 == Res:
         print('A0[{}]=0x{:0>2X}'.format(110, A0RawReadByte[0]))
         f.write('A0[{}]=0x{:0>2X}\n'.format(110, A0RawReadByte[0]))
@@ -188,7 +185,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-testEvb.Xfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 #########################################################
 #               Command Sevices
@@ -198,7 +195,7 @@ strCmdIn = create_string_buffer(b'MCU_GET_VERSION()')
 strCmdOutBuff = ctypes.c_ubyte*64
 strCmdOut = strCmdOutBuff()
 strFwVer = []
-retStauts = _cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
+retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
 if 0 == retStauts:
     strFwVer = [chr(strCmdOut[item]) for item in range(len(strCmdOut)) if 0 != strCmdOut[item]]
 else:
@@ -230,7 +227,7 @@ strCmdIn = create_string_buffer(b'MCU_GET_TABLE(base,3,4,16)')
 strCmdOutBuff = ctypes.c_ubyte * 128
 strCmdOut = strCmdOutBuff()
 strModuleId = []
-retStauts = _cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
+retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
 if 0 == retStauts:
     strModuleId = [chr(strCmdOut[item]) for item in range(len(strCmdOut)) if 0 != strCmdOut[item]]
     strModuleId = ''.join(strModuleId).split(',')
@@ -260,9 +257,9 @@ while time.time() < endTick:
     f.write("\n\nRound.{}, POR...".format(total_times_count))
     # clear factory password
     testEvb.AteAllPowerOff()
-    time.sleep(2)
+    time.sleep(1)
     testEvb.AteAllPowerOn()
-    time.sleep(2)
+    time.sleep(1)
 
     ret = read_A0_Status()
     if READBACK_STATUS.FAIL == ret:

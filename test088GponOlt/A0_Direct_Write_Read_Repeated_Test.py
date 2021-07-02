@@ -10,7 +10,7 @@ import sys
 #==============================================================================
 # Test times
 #==============================================================================
-wr_and_rd_times  = 5
+wr_and_rd_times  = 1000
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -158,14 +158,16 @@ for times in range(wr_and_rd_times):
         print("Round.{} A0 write data equal read data.".format(times))
     else:
         f.write('Round.{}: A0 write data not equal read data.'.format(times)+'\n\n')
-		print('Round.{}: A0 write data not equal read data.'.format(times)+'\n\n')
+        print('Round.{}: A0 write data not equal read data.'.format(times)+'\n\n')
 
     testEvb.AteAllPowerOff()
     time.sleep(1)
 
 if wr_and_rd_times == totalSuccess:
+    print('A0 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A0 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
+    print('A0 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A0 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
 

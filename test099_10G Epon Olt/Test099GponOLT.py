@@ -17,7 +17,7 @@ user_password_type = is_other_Module
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -72,36 +72,41 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("099 GEPON OLT test, start time : {}".format(dateTime))
+print("099 10G EPON OLT test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\n099 GEPON OLT test, start time : {}".format(dateTime))
+f.write("\n099 10G EPON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
-
-
-
 f.close()
-
 
 #########################################################
 #               Test Configuration
 #########################################################
 #True or False
 
-FW_Basic_Config_Check_TEST = True
+FW_Basic_Config_Check_TEST = False
 A0_WRITE_READ_STRESS_TEST = True
 A2_WRITE_READ_STRESS_TEST = True
+A0_HIGH_WRITE_READ_STRESS_TEST = True
+A2_HIGH_WRITE_READ_STRESS_TEST = True
+B0_WRITE_READ_STRESS_TEST = True
+B2_WRITE_READ_STRESS_TEST = True
+B0_HIGH_WRITE_READ_STRESS_TEST = True
+B2_HIGH_WRITE_READ_STRESS_TEST = True
 Driver_GN25L99_TEST = False
 Driver_GN25L96_TEST = False
 Driver_UX3320_TEST = False
-TxPower_Dis_En_STRESS_TEST = True
+TxPower_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
 User_Encryption_Rule_TEST = True
 Password_READ_BACK_TEST = True
-Module_Init_Check_TEST = True
+Module_Init_Check_TEST = False
+
+if True == FW_Basic_Config_Check_TEST:
+    os.system('.\TestFWBasicInfo.py')
+
 if True == Driver_GN25L96_TEST:
     os.system('.\Driver_GN25L96_Test.py')
 
@@ -111,13 +116,29 @@ if True == Driver_GN25L99_TEST:
 if True == Driver_UX3320_TEST:
     os.system('.\Driver_UX3320_Test.py')
 
-#A0 write and read repeated
 if True == A0_WRITE_READ_STRESS_TEST:
     os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
 
-#A2 write and read repeated
+if True == A0_HIGH_WRITE_READ_STRESS_TEST:
+    os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
+
 if True == A2_WRITE_READ_STRESS_TEST:
     os.system('.\A2_Direct_Write_Read_Repeated_Test.py')
+
+if True == A2_HIGH_WRITE_READ_STRESS_TEST:
+    os.system('.\A2_Direct_High_Write_Read_Repeated_Test.py')
+
+if True == B0_WRITE_READ_STRESS_TEST:
+    os.system('.\B0_Direct_Write_Read_Repeated_Test.py')
+
+if True == B0_HIGH_WRITE_READ_STRESS_TEST:
+    os.system('.\B0_Direct_High_Write_Read_Repeated_Test.py')
+
+if True == B2_WRITE_READ_STRESS_TEST:
+    os.system('.\B2_Direct_Write_Read_Repeated_Test.py')
+
+if True == B2_HIGH_WRITE_READ_STRESS_TEST:
+    os.system('.\B2_Direct_High_Write_Read_Repeated_Test.py')
 
 if True == TxPower_Dis_En_STRESS_TEST:
     os.system('.\Tx_Soft_Dis_En_Repeated_Test.py')
@@ -133,14 +154,15 @@ if True == Password_READ_BACK_TEST:
 
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')
+
 f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("099 GEPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("099 10G EPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\n099 GEPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\n099 10G EPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()

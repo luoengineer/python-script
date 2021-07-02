@@ -1,14 +1,13 @@
 import ctypes
 from ctypes import *
 import time
-import random
-import operator
+from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
+from classTestEvb import *
+import sys
 import math
-from cmdServ import cmdservdll, devUsbIndex, devSffChannel
-from cmdServ import Sfp_Factory_Pwd_Entry, AteAllPowerOn, AteAllPowerOff, openUsbDevice
 
 #Test times
-wr_and_rd_times  = 10
+wr_and_rd_times  = 1000
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -19,10 +18,19 @@ ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
 XfpI2dAddr = [0xA0,0xA4]
 
-#load dll
+devUsbIndex = 0
+devSffChannel = 1
+devSfpChannel = 2
+
 objdll = ctypes.cdll.LoadLibrary(".\ATEAPI.dll")
 tx_soft_dis = 0x40
 tx_soft_en  = 0x00
+
+#########################################################
+#               create object
+#########################################################
+testEvb = cTestEvb(devUsbIndex)
+
 
 #########################################################
 #               Inner Funtion
@@ -52,13 +60,12 @@ def calcTxpower01uW(_byte_dat):
 #########################################################
 #               Open USB Device
 #########################################################
-#TODO: How to config several usb device
-openUsbDevice(devUsbIndex)
+testEvb.openUsbDevice()
 
 #########################################################
 #               Slot Power On
 #########################################################
-AteAllPowerOn(devUsbIndex)
+testEvb.AteAllPowerOn()
 time.sleep(2)
 #########################################################
 #               Entry Password
@@ -75,12 +82,7 @@ strCmdOut = strCmdOutBuff()
 strFwVer = []
 retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
 if 0 == retStauts:
-    for item in range(len(strCmdOut)):
-        if 0x00 != strCmdOut[item]:
-            #print("{}".format(chr(strCmdOut[item])), end='')
-            strFwVer.append(chr(strCmdOut[item]))
-    else:
-        print("{0:d}".format(retStauts))
+    strFwVer = [chr(strCmdOut[item]) for item in range(len(strCmdOut)) if 0 != strCmdOut[item]]
 else:
     print("Can't get firmware version, stop test ! ")
     sys.exit()
@@ -108,9 +110,9 @@ print("{}".format(testTitle))
 f.write('\n'+testTitle)
 
 # clear factory password
-AteAllPowerOff(devUsbIndex)
+testEvb.AteAllPowerOff()
 time.sleep(2)
-AteAllPowerOn(devUsbIndex)
+testEvb.AteAllPowerOn()
 time.sleep(2)
 
 #########################################################

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="10bfb721-eeeb-4307-b246-5d9ef4e53ca2" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="ProjectId" id="1tdvTjOYd4JycvIJ98ASLMSzak5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../test099ComboOlt" />
+    <property name="settings.editor.selected.configurable" value="http.proxy" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="10bfb721-eeeb-4307-b246-5d9ef4e53ca2" name="Default Changelist" comment="" />
+      <created>1623111790190</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1623111790190</updated>
+      <workItem from="1623111793666" duration="129000" />
+      <workItem from="1623112055253" duration="96000" />
+      <workItem from="1623112171348" duration="1376000" />
+      <workItem from="1623113575571" duration="1305000" />
+      <workItem from="1623231705699" duration="67000" />
+      <workItem from="1623725162507" duration="8575000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="137" y="18" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1623113396387">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="137" y="18" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1623113396387" />
+    <state x="601" y="188" key="#com.intellij.tools.ToolEditorDialog" timestamp="1623113704619">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="601" y="188" key="#com.intellij.tools.ToolEditorDialog/0.0.1366.728@0.0.1366.728" timestamp="1623113704619" />
+    <state x="92" y="92" width="1182" height="544" maximized="true" key="DiffContextDialog" timestamp="1623738931034">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="92" y="92" width="1182" height="544" maximized="true" key="DiffContextDialog/0.0.1366.728@0.0.1366.728" timestamp="1623738931034" />
+    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1623739675417">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1623739675417" />
+    <state width="1322" height="73" key="GridCell.Tab.0.bottom" timestamp="1623119706301">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1322" height="73" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1623119706301" />
+    <state width="1322" height="73" key="GridCell.Tab.0.center" timestamp="1623119706301">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1322" height="73" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1623119706301" />
+    <state width="1322" height="73" key="GridCell.Tab.0.left" timestamp="1623119706301">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1322" height="73" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1623119706301" />
+    <state width="1322" height="73" key="GridCell.Tab.0.right" timestamp="1623119706301">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1322" height="73" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1623119706301" />
+    <state x="166" y="0" key="SettingsEditor" timestamp="1623728336568">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="166" y="0" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1623728336568" />
+    <state x="92" y="92" width="1182" height="544" maximized="true" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1623739676454">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="92" y="92" width="1182" height="544" maximized="true" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1366.728@0.0.1366.728" timestamp="1623739676454" />
+    <state x="476" y="276" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1623729390842">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="476" y="276" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.728@0.0.1366.728" timestamp="1623729390842" />
+    <state x="371" y="150" key="git4idea.merge.GitPullDialog" timestamp="1623728806305">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="371" y="150" key="git4idea.merge.GitPullDialog/0.0.1366.728@0.0.1366.728" timestamp="1623728806305" />
+    <state x="456" y="220" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1623728727450">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="456" y="220" key="git4idea.remote.GitConfigureRemotesDialog/0.0.1366.728@0.0.1366.728" timestamp="1623728727450" />
+  </component>
+</project>
