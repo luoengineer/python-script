@@ -1,13 +1,14 @@
 import ctypes
 from ctypes import *
 import time
-
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import os
 
-
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
 # user type for password
 is_088_Module = 0
@@ -88,21 +89,26 @@ f.close()
 
 FW_Basic_Config_Check_TEST = False
 A0_WRITE_READ_STRESS_TEST = True
-A2_WRITE_READ_STRESS_TEST = True
-A0_HIGH_WRITE_READ_STRESS_TEST = True
-A2_HIGH_WRITE_READ_STRESS_TEST = True
-B0_WRITE_READ_STRESS_TEST = True
-B2_WRITE_READ_STRESS_TEST = True
-B0_HIGH_WRITE_READ_STRESS_TEST = True
-B2_HIGH_WRITE_READ_STRESS_TEST = True
+A2_WRITE_READ_STRESS_TEST = False
+A0_HIGH_WRITE_READ_STRESS_TEST = False
+A2_HIGH_WRITE_READ_STRESS_TEST = False
+B0_WRITE_READ_STRESS_TEST = False
+B2_WRITE_READ_STRESS_TEST = False
+B0_HIGH_WRITE_READ_STRESS_TEST = False
+B2_HIGH_WRITE_READ_STRESS_TEST = False
 Driver_GN25L99_TEST = False
 Driver_GN25L96_TEST = False
 Driver_UX3320_TEST = False
 TxPower_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
-User_Encryption_Rule_TEST = True
-Password_READ_BACK_TEST = True
+User_Encryption_Rule_TEST = False
+Password_READ_BACK_TEST = False
 Module_Init_Check_TEST = False
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'public_script')
+sys.path.append(path)
+
 
 if True == FW_Basic_Config_Check_TEST:
     os.system('.\TestFWBasicInfo.py')
@@ -117,7 +123,10 @@ if True == Driver_UX3320_TEST:
     os.system('.\Driver_UX3320_Test.py')
 
 if True == A0_WRITE_READ_STRESS_TEST:
-    os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
+    pub_path = os.path.dirname(os.path.dirname(__file__))
+    pub_path = os.path.join(pub_path, 'public_script')
+    sys.path.append(pub_path)
+    import A0_Direct_Write_Read_Repeated_099_Test
 
 if True == A0_HIGH_WRITE_READ_STRESS_TEST:
     os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
