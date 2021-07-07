@@ -160,7 +160,7 @@ if True == User_Encryption_Rule_TEST:
     os.system('.\SFP+_099_Encryption_Rule_Test.py')
 
 if True == Password_READ_BACK_TEST:
-    os.system('.\Password_ReadBack_Test.py')
+    import Password_ReadBack_099_Test
 
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')

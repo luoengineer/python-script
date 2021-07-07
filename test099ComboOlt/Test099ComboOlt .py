@@ -1,12 +1,18 @@
 import ctypes
 from ctypes import *
 import time
-
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+
+pub_path = os.path.dirname(os.path.dirname(__file__))
+pub_path = os.path.join(pub_path, 'public_script')
+sys.path.append(pub_path)
 
 # user type for password
 is_088_Module = 0
@@ -16,7 +22,7 @@ user_password_type = is_other_Module
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -26,9 +32,6 @@ devSfpChannel = 2
 #               create object
 #########################################################
 testEvb = cTestEvb(devUsbIndex)
-    
-
-
 #########################################################
 #               Open USB Device
 #########################################################
@@ -87,24 +90,58 @@ f.close()
 #               Test Configuration
 #########################################################
 #True or False
+FW_Basic_Config_Check_TEST = True
 A0_WRITE_READ_STRESS_TEST = True
 A2_WRITE_READ_STRESS_TEST = True
-A2_DIRECT_HIGH_WRITE_READ_STRESS_TEST = True
-B2_DIRECT_HIGH_WRITE_READ_STRESS_TEST = True
+A0_HIGH_WRITE_READ_STRESS_TEST = True
+A2_HIGH_WRITE_READ_STRESS_TEST = True
 B0_WRITE_READ_STRESS_TEST = True
 B2_WRITE_READ_STRESS_TEST = True
+B0_HIGH_WRITE_READ_STRESS_TEST = True
+B2_HIGH_WRITE_READ_STRESS_TEST = True
 Driver_GN7153B_TEST = False
-Driver_GN25L96_TEST = True
+Driver_GN25L96_TEST = False
 Driver_UX3320_TEST = False
-TxPower_Dis_En_STRESS_TEST = True
-Inner_I2C_STRESS_TEST = True
+Driver_GN25L99_TEST = False
+TxPower_Dis_En_STRESS_TEST = False
+Inner_I2C_STRESS_TEST = False
 User_Encryption_Rule_TEST = True
 Password_READ_BACK_TEST = True
-SFP_B2_Page_0_TEST = True
+Module_Init_Check_TEST = False
+B2_Page0_Check_TEST = True
 
-#########################################################
-#               Test Run
-#########################################################
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'public_script')
+sys.path.append(path)
+
+
+if True == FW_Basic_Config_Check_TEST:
+    os.system('.\TestFWBasicInfo.py')
+
+if True == A0_WRITE_READ_STRESS_TEST:
+    import A0_Direct_Write_Read_Repeated_099_Test
+
+if True == A0_HIGH_WRITE_READ_STRESS_TEST:
+    import A0_Direct_High_Write_Read_Repeated_099_Test
+
+if True == A2_WRITE_READ_STRESS_TEST:
+    import A2_Direct_Write_Read_Repeated_099_Test
+
+if True == A2_HIGH_WRITE_READ_STRESS_TEST:
+    import A2_Direct_High_Write_Read_Repeated_099_Test
+
+if True == B0_WRITE_READ_STRESS_TEST:
+    import B0_Direct_Write_Read_Repeated_099_Test
+
+if True == B0_HIGH_WRITE_READ_STRESS_TEST:
+    import B0_Direct_High_Write_Read_Repeated_099_Test
+
+if True == B2_WRITE_READ_STRESS_TEST:
+    import B2_Direct_Write_Read_Repeated_099_Test
+
+if True == B2_HIGH_WRITE_READ_STRESS_TEST:
+    import B2_Direct_High_Write_Read_Repeated_099_Test
+
 if True == Driver_GN25L96_TEST:
     os.system('.\Driver_GN25L96_Test.py')
 
@@ -114,14 +151,6 @@ if True == Driver_GN25L99_TEST:
 if True == Driver_UX3320_TEST:
     os.system('.\Driver_UX3320_Test.py')
 
-#A0 write and read repeated
-if True == A0_WRITE_READ_STRESS_TEST:
-    os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
-
-#A2 write and read repeated
-if True == A2_WRITE_READ_STRESS_TEST:
-    os.system('.\A2_Direct_Write_Read_Repeated_Test.py')
-
 if True == TxPower_Dis_En_STRESS_TEST:
     os.system('.\Tx_Soft_Dis_En_Repeated_Test.py')
 
@@ -129,13 +158,17 @@ if True == Inner_I2C_STRESS_TEST:
     os.system('.\InnerI2C_GN25L99_Stress_Test.py')
 
 if True == User_Encryption_Rule_TEST:
-    os.system('.\SFP+_099_Encryption_Rule_Test.py')
+    import Encryption_Rule_099_Test
 
 if True == Password_READ_BACK_TEST:
-    os.system('.\Password_ReadBack_Test.py')
+    import Password_ReadBack_099_Test
 
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')
+
+if True == B2_Page0_Check_TEST:
+    import B2_Page0_099_Test
+
 f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)

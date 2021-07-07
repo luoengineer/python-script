@@ -14,6 +14,7 @@ is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
+
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
