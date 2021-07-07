@@ -1,12 +1,20 @@
 import ctypes
 from ctypes import *
 import time
-from cmdServ import cmdservdll, devUsbIndex
-from cmdServ import Sfp_Factory_Pwd_Entry, AteAllPowerOn, AteAllPowerOff, openUsbDevice
-from cmdServ import getAdc0, adc02TempIndex
+import random
+import operator
+import sys
+import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
-#Test times
+#==============================================================================
+# Test times
+#==============================================================================
 #wr_and_rd_times  = 5
 run_time_second = 1800  # unit : s
 # user type for password
@@ -17,22 +25,25 @@ user_password_type = is_other_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
+devUsbIndex = 0
+devSffChannel = 1
+devSfpChannel = 2
 #########################################################
 #               Inner Funtion
 #########################################################
 
 
 #########################################################
-#               Open USB Device
+#              Open USB Device
 #########################################################
-openUsbDevice(devUsbIndex)
+testEvb.openUsbDevice()
 
 #########################################################
 #               Slot Power On
 #########################################################
-AteAllPowerOn(devUsbIndex)
+testEvb.AteAllPowerOn()
 time.sleep(2)
 #########################################################
 #               Entry Password
@@ -61,8 +72,6 @@ strFwVer = ''.join(strFwVer)
 #                 Open File
 #########################################################
 startTick = time.time()
-endTick = startTick + run_time_second
-#dateTime = time.strptime(time.asctime())
 dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
@@ -259,6 +268,6 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nInner I2c stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
-AteAllPowerOff(devUsbIndex)
+testEvb.AteAllPowerOff()
 f.close()
 

@@ -141,7 +141,22 @@ def cmd_read_table(table_type, table_index, table_read_offset, table_read_len):
     else:
         return 'FAIL', None
 
-
-
-
-
+#read max 8 regs
+def cmd_read_drv_reg(drv_addr, reg_offset, reg_read_len):
+    command_str = 'MCU_I2C_READ(' + str(drv_addr) + ',' \
+                  + str(reg_offset) + ',' \
+                  + str(reg_read_len) + ')'
+    command_str = bytes(command_str, encoding="utf8")
+    strCmdIn = create_string_buffer(command_str)
+    strCmdOutBuff = ctypes.c_ubyte * 64
+    strCmdOut = strCmdOutBuff()
+    regs_data = []
+    if 0 == cmdservdll.SuperCmdSer(strCmdIn, strCmdOut):
+        for item in range(reg_read_len):
+            ch0 = ascii_to_hex(strCmdOut[2 + item * 5])
+            ch1 = ascii_to_hex(strCmdOut[3 + item * 5])
+            # print("{}, {}".format(ch0, ch1))
+            regs_data.append(ch0 * 16 + ch1)
+        return 'OK', regs_data
+    else:
+        return 'FAIL', None
