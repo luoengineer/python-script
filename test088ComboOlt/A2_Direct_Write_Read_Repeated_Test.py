@@ -3,12 +3,19 @@ from ctypes import *
 import time
 import random
 import operator
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
+import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+
+#==============================================================================
 #Test times
-wr_and_rd_times  = 1000
+#==============================================================================
+wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -17,7 +24,7 @@ user_password_type = is_088_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -34,13 +41,8 @@ testEvb = cTestEvb(devUsbIndex)
 def random_int_list(start, stop, length):
   start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
   length = int(abs(length)) if length else 0
-  random_list = []
   for i in range(length):
-      random_list.append(random.randint(start, stop))
-
-  return random_list
-
-    
+    yield random.randint(start, stop)
 
 
 #########################################################
@@ -123,8 +125,9 @@ for times in range(wr_and_rd_times):
    
     A2WriteDataBuff = [0x00] * 96
     A2WriteDataBuff = random_int_list(0, 256, 96)
-    A2WriteDataBuff[92] = 0
+    #A2WriteDataBuff[92] = 0
     A2WriteByte = (c_ubyte * 96)(*A2WriteDataBuff)
+    A2WriteByte[92] = 0
 
     f.write('write :\n')
     for item in range(96):
@@ -161,14 +164,16 @@ for times in range(wr_and_rd_times):
         print("Round.{} A2 write data equal read data.".format(times))
     else:
         f.write('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
-        print('Round.{}: A2 write data not equal read data.'.format(times))
+        print('Round.{}: A2 write data not equal read data.'.format(times)+'\n\n')
 
     testEvb.AteAllPowerOff()
     time.sleep(1)
 
 if wr_and_rd_times == totalSuccess:
+    print('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
+    print('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
 

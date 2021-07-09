@@ -1,13 +1,18 @@
 import ctypes
 from ctypes import *
 import time
-
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
+pub_path = os.path.dirname(os.path.dirname(__file__))
+pub_path = os.path.join(pub_path, 'public_script')
+sys.path.append(pub_path)
 
 # user type for password
 is_088_Module = 0
@@ -86,24 +91,42 @@ f.close()
 #########################################################
 #True or False
 
-FW_Basic_Config_Check_TEST = False
+FW_Basic_Config_Check_TEST = True
 A0_WRITE_READ_STRESS_TEST = True
 A2_WRITE_READ_STRESS_TEST = True
 A0_HIGH_WRITE_READ_STRESS_TEST = True
 A2_HIGH_WRITE_READ_STRESS_TEST = True
-Driver_GN25L99_TEST = False
-Driver_GN25L96_TEST = False
+
+Driver_GN25L96_TEST = True #需要配置lut表，adjust，AER是否enable
 Driver_UX3320_TEST = False
+Driver_GN25L99_TEST = False
+TxPower_08uW_AlarmWarning_TEST = True
 TxPower_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
 User_Encryption_Rule_TEST = True
 Password_READ_BACK_TEST = True
 Module_Init_Check_TEST = False
-TxPower_08uW_AlarmWarning_TEST = True
+
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'public_script')
+sys.path.append(path)
+
 
 if True == FW_Basic_Config_Check_TEST:
     os.system('.\TestFWBasicInfo.py')
 
+if True == A0_WRITE_READ_STRESS_TEST:
+    import A0_Direct_Write_Read_Repeated_099_Test
+
+if True == A0_HIGH_WRITE_READ_STRESS_TEST:
+    import A0_Direct_High_Write_Read_Repeated_099_Test
+
+if True == A2_WRITE_READ_STRESS_TEST:
+    import A2_Direct_Write_Read_Repeated_099_Test
+
+if True == A2_HIGH_WRITE_READ_STRESS_TEST:
+    import A2_Direct_High_Write_Read_Repeated_099_Test
 if True == Driver_GN25L96_TEST:
     os.system('.\Driver_GN25L96_Test.py')
 
@@ -112,18 +135,6 @@ if True == Driver_GN25L99_TEST:
 
 if True == Driver_UX3320_TEST:
     os.system('.\Driver_UX3320_Test.py')
-
-if True == A0_WRITE_READ_STRESS_TEST:
-    os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
-
-if True == A0_HIGH_WRITE_READ_STRESS_TEST:
-    os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
-
-if True == A2_WRITE_READ_STRESS_TEST:
-    os.system('.\A2_Direct_Write_Read_Repeated_Test.py')
-
-if True == A2_HIGH_WRITE_READ_STRESS_TEST:
-    os.system('.\A2_Direct_High_Write_Read_Repeated_Test.py')
 
 if True == TxPower_08uW_AlarmWarning_TEST:
     os.system('.\Tx08uw_AlarmWarning_Test.py')
@@ -135,10 +146,10 @@ if True == Inner_I2C_STRESS_TEST:
     os.system('.\InnerI2C_GN25L99_Stress_Test.py')
 
 if True == User_Encryption_Rule_TEST:
-    os.system('.\SFP+_099_Encryption_Rule_Test.py')
+    import Encryption_Rule_088_Test
 
 if True == Password_READ_BACK_TEST:
-    os.system('.\088_Password_ReadBack_Test.py')
+    import Password_ReadBack_088_Test
 
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')
@@ -147,10 +158,10 @@ f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("088 GPON OLT basic test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("088 GPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\088 GPON OLT basic test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\088 GPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
