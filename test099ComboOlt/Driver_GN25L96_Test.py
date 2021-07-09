@@ -98,17 +98,17 @@ driveInstance.driver_reg_map = [0x90, 0x91, 0x92, 0x93, 0x94, 0x96, 0x97, 0x98, 
                                 0xDD, 0xDE, 0xDF, 0xE0, 0xE1]
 
 driveInstance.apc_reg = 0xA4, 'APC', 1
-driveInstance.apc_table = 2, "0x4B,0x02,0x51,0x00,0x5F,0xFF,0x01,0xC4,0x00,0x6C", 1000, 1
+driveInstance.apc_table = 2, [0x4B,0x02,0x51,0x00,0x5F,0xFF,0x01,0xC4,0x00,0x6C], 1000, 1
 driveInstance.mcu_apc_adjust = 6
 
 #需要确认AER是否使能，如果enable就读0xA8，否则读0xA2-0xA3
 #driveInstance.aer_reg = 0xA8, 'AER', 1 #AER Enable
 driveInstance.aer_reg = 0xA2, 'AER', 2 #AER Disable, use Lut
-driveInstance.aer_table = 3, "0x4B,0x00,0x32,0x00,0x0E,0xFF,0x00,0x56,0x00,0x0C", 1000, 1
+driveInstance.aer_table = 3, [0x4B,0x00,0x32,0x00,0x0E,0xFF,0x00,0x56,0x00,0x0C], 1000, 1
 driveInstance.mcu_aer_adjust = 7
 
 driveInstance.maxmod_reg = 0xA7, 'Max MOD', 1
-driveInstance.maxmod_table = 11, "0x60,0x02,0x51,0x00,0x5F,0xFF,0x01,0xC4,0x00,0x6C", 1000, 1
+driveInstance.maxmod_table = 11, [0x60,0x02,0x51,0x00,0x5F,0xFF,0x01,0xC4,0x00,0x6C], 1000, 1
 driveInstance.mcu_maxmod_adjust = 10
 
 
@@ -121,10 +121,43 @@ f.write("\n*********************************************************************
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
 
+print("\nAt first, reading LUT...")
+f.write("\nAt first, reading LUT...")
+lut_apc = []
+ret, lut_apc = cmd_read_table('lut', driveInstance.apc_table[0], 0, 128)
+if 'OK' != ret:
+    print("\nCan't read APC LUT")
+    f.write("\nCan't read APC LUT")
+    sys.exit()
+else:
+    print("\nFinish reading APC LUT")
+    f.write("\nFinish reading APC LUT")
+
+lut_aer = []
+ret, lut_aer = cmd_read_table('lut', driveInstance.aer_table[0], 0, 128)
+if 'OK' != ret:
+    print("\nCan't read AER LUT")
+    f.write("\nCan't read AER LUT")
+    sys.exit()
+else:
+    print("\nFinish reading AER LUT")
+    f.write("\nFinish reading AER LUT")
+
+lut_max_mod = []
+ret, lut_max_mod = cmd_read_table('lut', driveInstance.maxmod_table[0], 0, 96)
+if 'OK' != ret:
+    print("\nCan't read MAX MOD LUT")
+    f.write("\nCan't read MAX MOD LUT")
+    sys.exit()
+else:
+    print("\nFinish reading MAX MOD LUT")
+    f.write("\nFinish reading MAX MOD LUT")
+
 read_drv_init_val = True
 if True == read_drv_init_val:
     print("\nGet Driver register initial Value:\n")
     f.write('\n\nGet Driver register initial Value:\n')
+
     for item in range(len(driveInstance.driver_reg_map)):
         command_str = 'MCU_I2C_READ(' + str(driveInstance.driver_addr) + ',' \
                       + str(driveInstance.driver_reg_map[item]) + ',' \
@@ -154,7 +187,7 @@ f.write("\n\nNow start realtime adjust {} with mcu temperature".format(driveInst
 
 print("Write {} Lut : {}".format(driveInstance.apc_reg[1], driveInstance.apc_table[1]), end='')
 f.write("\nWrite {} Lut : {}".format(driveInstance.apc_reg[1], driveInstance.apc_table[1]))
-if 'OK' == driveInstance.cmd_write_lut(driveInstance.apc_table):
+if 'OK' == cmd_write_table('lut', driveInstance.apc_table[0], 0, driveInstance.apc_table[1]):
     strCmdOutBuff = ctypes.c_ubyte * 32
     strCmdOut = strCmdOutBuff()
     strCmdOut = getAdc0()
@@ -172,18 +205,18 @@ if 'OK' == driveInstance.cmd_write_lut(driveInstance.apc_table):
     print("\ntempIndex : {}".format(tempIndex))
     f.write("\ntempIndex : {}".format(tempIndex))
 
-    lutable_list = driveInstance.apc_table[1].split(",")
+    lutable_lis = []
+    lutable_list = driveInstance.apc_table[1]
     #print("\n{}".format(apc_table_list))
-
-    if tempIndex < int(lutable_list[0], 16):
-        adjust_val = tempIndex * (int(lutable_list[1], 16) * 256 + int(lutable_list[2], 16)) / \
+    adjust_val = 0xFF
+    if tempIndex < lutable_list[0]:
+        adjust_val = round(tempIndex * (lutable_list[1] * 256 + lutable_list[2]) / \
                      driveInstance.apc_table[2] \
-                     + (int(lutable_list[3],16) * 256 + int(lutable_list[4],16)) / driveInstance.apc_table[3]
+                     + (lutable_list[3]* 256 + lutable_list[4]) / driveInstance.apc_table[3])
     else:
-        adjust_val = tempIndex * (int(lutable_list[6], 16) * 256 + int(lutable_list[7], 16)) / \
+        adjust_val = round(tempIndex * (lutable_list[6] * 256 + lutable_list[7]) / \
                      driveInstance.apc_table[2] \
-                     + (int(lutable_list[8], 16) * 256 + int(lutable_list[9], 16)) / driveInstance.apc_table[3]
-    #print("adjust val = 0x{:2X}".format(int(adjust_val)))
+                     + (lutable_list[8] * 256 + lutable_list[9]) / driveInstance.apc_table[3])
     print("Set {} {} mode,now tempIndex is {}, 0x{:2X} should adjust to '0x{:2X}'".format(driveInstance._driver_name, \
                                                                                             driveInstance.apc_reg[1],
                                                                                             tempIndex,
@@ -197,11 +230,14 @@ if 'OK' == driveInstance.cmd_write_lut(driveInstance.apc_table):
     if 'OK' == (driveInstance.cmd_mcu_set_adjust(driveInstance.mcu_apc_adjust, 'A')):
         print("Read {} 0x{:2X} = ".format(driveInstance._driver_name, driveInstance.apc_reg[0]), end='')
         f.write("\nRead {} 0x{:2X} = ".format(driveInstance._driver_name, driveInstance.apc_reg[0]))
-        strCmdOut = driveInstance.cmd_mcu_i2c_read(driveInstance.driver_addr, driveInstance.apc_reg[0],
-                                                   driveInstance.apc_reg[2])
-        for item in range(len(strCmdOut)):
-            print("{}".format(chr(strCmdOut[item])), end='')
-            f.write(chr(strCmdOut[item]))
+        reg_val = []
+        ret, reg_val = cmd_read_drv_reg(driveInstance.driver_addr, driveInstance.apc_reg[0], driveInstance.apc_reg[2])
+        if 'OK' == ret and (reg_val[0] == int(adjust_val) or reg_val[0] == int(adjust_val)-1 or reg_val == int(adjust_val)+1):
+            print("0x{:02X}, OK".format(reg_val[0]), end='')
+            f.write("0x{:02X}, OK".format(reg_val[0]))
+        else:
+            print("0x{:02X}, FAIL".format(reg_val[0]), end='')
+            f.write("0x{:02X}, FAIL".format(reg_val[0]))
 else:
     print("\nWrite {} Lut Fail.".format(driveInstance.apc_reg[1]), end='')
     f.write("\nWrite {} Lut Fail.".format(driveInstance.apc_reg[1]))
@@ -213,7 +249,7 @@ f.write("\n\nNow start realtime adjust {} with mcu temperature".format(driveInst
 
 print("Write {} Lut : {}".format(driveInstance.maxmod_reg[1], driveInstance.maxmod_table[1]), end='')
 f.write("\nWrite {} Lut : {}".format(driveInstance.maxmod_reg[1], driveInstance.maxmod_table[1]))
-if 'OK' == (driveInstance.cmd_write_lut(driveInstance.maxmod_table)):
+if 'OK' == cmd_write_table('lut', driveInstance.maxmod_table[0], 0, driveInstance.maxmod_table[1]):
     strCmdOutBuff = ctypes.c_ubyte * 32
     strCmdOut = strCmdOutBuff()
     strCmdOut = getAdc0()
@@ -230,18 +266,17 @@ if 'OK' == (driveInstance.cmd_write_lut(driveInstance.maxmod_table)):
     tempIndex = adc02TempIndex(strCmdOut)
     print("\ntempIndex : {}".format(tempIndex))
     f.write("\ntempIndex : {}".format(tempIndex))
-
-    lutable_list = driveInstance.maxmod_table[1].split(",")
-
-    if tempIndex < int(lutable_list[0], 16):
-        adjust_val = tempIndex * (int(lutable_list[1], 16) * 256 + int(lutable_list[2], 16)) / \
+    lutable_list = []
+    lutable_list = driveInstance.maxmod_table[1]
+    adjust_val = 0xFF
+    if tempIndex < lutable_list[0]:
+        adjust_val = round(tempIndex * (lutable_list[1] * 256 + lutable_list[2]) / \
                      driveInstance.maxmod_table[2] \
-                     + (int(lutable_list[3],16) * 256 + int(lutable_list[4],16)) / driveInstance.maxmod_table[3]
+                     + (lutable_list[3] * 256 + lutable_list[4]) / driveInstance.maxmod_table[3])
     else:
-        adjust_val = tempIndex * (int(lutable_list[6], 16) * 256 + int(lutable_list[7], 16)) / \
+        adjust_val = round(tempIndex * (lutable_list[6] * 256 + lutable_list[7]) / \
                      driveInstance.maxmod_table[2] \
-                     + (int(lutable_list[8], 16) * 256 + int(lutable_list[9], 16)) / driveInstance.maxmod_table[3]
-    #print("adjust val = 0x{:2X}".format(int(adjust_val)))
+                     + (lutable_list[8] * 256 + lutable_list[9]) / driveInstance.maxmod_table[3])
     print("Set {} {} mode,now tempIndex is {}, 0x{:2X} should adjust to '0x{:2X}'".format(driveInstance._driver_name, \
                                                                                             driveInstance.maxmod_reg[1],
                                                                                             tempIndex,
@@ -255,11 +290,14 @@ if 'OK' == (driveInstance.cmd_write_lut(driveInstance.maxmod_table)):
     if 'OK' == (driveInstance.cmd_mcu_set_adjust(driveInstance.mcu_maxmod_adjust, 'A')):
         print("Read {} 0x{:2X} = ".format(driveInstance._driver_name, driveInstance.maxmod_reg[0]), end='')
         f.write("\nRead {} 0x{:2X} = ".format(driveInstance._driver_name, driveInstance.maxmod_reg[0]))
-        strCmdOut = driveInstance.cmd_mcu_i2c_read(driveInstance.driver_addr, driveInstance.maxmod_reg[0],
-                                                   driveInstance.maxmod_reg[2])
-        for item in range(len(strCmdOut)):
-            print("{}".format(chr(strCmdOut[item])), end='')
-            f.write(chr(strCmdOut[item]))
+        reg_val = []
+        ret, reg_val = cmd_read_drv_reg(driveInstance.driver_addr, driveInstance.maxmod_reg[0], driveInstance.maxmod_reg[2])
+        if 'OK' == ret and (reg_val[0] == int(adjust_val) or reg_val[0] == int(adjust_val)-1 or reg_val == int(adjust_val)+1):
+            print("0x{:02X}, OK".format(reg_val[0]), end='')
+            f.write("0x{:02X}, OK".format(reg_val[0]))
+        else:
+            print("0x{:02X}, FAIL".format(reg_val[0]), end='')
+            f.write("0x{:02X}, FAIL".format(reg_val[0]))
 else:
     print("\nWrite {} Lut Fail. ".format(driveInstance.maxmod_reg[1]), end='')
     f.write("\nWrite {} Lut Fail. ".format(driveInstance.maxmod_reg[1]))
@@ -284,7 +322,7 @@ else:
 
 print("Write {} Lut : {}".format(driveInstance.aer_reg[1], driveInstance.aer_table[1]), end='')
 f.write("\nWrite {} Lut : {}".format(driveInstance.apc_reg[1], driveInstance.aer_table[1]))
-if 'OK' == driveInstance.cmd_write_lut(driveInstance.aer_table):
+if 'OK' == cmd_write_table('lut', driveInstance.aer_table[0], 0, driveInstance.aer_table[1]):
     strCmdOutBuff = ctypes.c_ubyte * 32
     strCmdOut = strCmdOutBuff()
     strCmdOut = getAdc0()
@@ -301,19 +339,19 @@ if 'OK' == driveInstance.cmd_write_lut(driveInstance.aer_table):
     tempIndex = adc02TempIndex(strCmdOut)
     print("\ntempIndex : {}".format(tempIndex))
     f.write("\ntempIndex : {}".format(tempIndex))
+    lutable_list = []
+    lutable_list = driveInstance.aer_table[1]
 
-    lutable_list = driveInstance.aer_table[1].split(",")
-    #print("\n{}".format(apc_table_list))
-
-    if tempIndex < int(lutable_list[0], 16):
-        adjust_val = tempIndex * (int(lutable_list[1], 16) * 256 + int(lutable_list[2], 16)) / \
+    adjust_val = 0xFF
+    if tempIndex < lutable_list[0]:
+        adjust_val = round(tempIndex * (lutable_list[1] * 256 + lutable_list[2]) / \
                      driveInstance.aer_table[2] \
-                     + (int(lutable_list[3],16) * 256 + int(lutable_list[4], 16)) / driveInstance.aer_table[3]
+                     + (lutable_list[3] * 256 + lutable_list[4]) / driveInstance.aer_table[3])
     else:
-        adjust_val = tempIndex * (int(lutable_list[6], 16) * 256 + int(lutable_list[7], 16)) / \
+        adjust_val = round(tempIndex * (lutable_list[6] * 256 + lutable_list[7]) / \
                      driveInstance.aer_table[2] \
-                     + (int(lutable_list[8], 16) * 256 + int(lutable_list[9], 16)) / driveInstance.aer_table[3]
-    if 0 == isAerFlag:
+                     + (lutable_list[8] * 256 + lutable_list[9]) / driveInstance.aer_table[3])
+    if 1 == isAerFlag:
         adjust_val = int(adjust_val) & 0x3F
     print("Set {} {} mode,now tempIndex is {}, 0x{:2X} should adjust to '0x{:2X}'".format(driveInstance._driver_name, \
                                                                                         driveInstance.aer_reg[1],
@@ -328,22 +366,34 @@ if 'OK' == driveInstance.cmd_write_lut(driveInstance.aer_table):
     if 'OK' == (driveInstance.cmd_mcu_set_adjust(driveInstance.mcu_aer_adjust, 'A')):
         print("Read {} 0x{:2X} = ".format(driveInstance._driver_name, driveInstance.aer_reg[0]), end='')
         f.write("\nRead {} 0x{:2X} = ".format(driveInstance._driver_name, driveInstance.aer_reg[0]))
-        '''
-        strCmdOut = driveInstance.cmd_mcu_i2c_read(driveInstance.driver_addr, driveInstance.aer_reg[0],
-                                               driveInstance.aer_reg[2])
-        for item in range(len(strCmdOut)):
-            print("{}".format(chr(strCmdOut[item])), end='')
-            f.write(chr(strCmdOut[item]))
-        '''
-        ret, reg_data = cmd_read_drv_reg(driveInstance.driver_addr, driveInstance.aer_reg[0], driveInstance.aer_reg[2])
-        if 'OK' == ret:
-            print("0x{:02X}".format(int((reg_data[0]*256+reg_data[1])/64)), end='')
-            f.write("0x{:02X}".format(int((reg_data[0]*256+reg_data[1])/64)))
+        reg_val = []
+        ret, reg_val = cmd_read_drv_reg(driveInstance.driver_addr, driveInstance.aer_reg[0],
+                                        driveInstance.aer_reg[2])
+        if 0 == isAerFlag:
+            read_reg_val = int((reg_val[0]*256+reg_val[1])/64)
+        else:
+            read_reg_val = reg_val[0]&0x3F
+        if 'OK' == ret and (read_reg_val == int(adjust_val) or read_reg_val == int(adjust_val)-1 or read_reg_val == int(adjust_val)+1):
+            print("0x{:02X}, OK".format(read_reg_val), end='')
+            f.write("0x{:02X}, OK".format(read_reg_val))
+        else:
+            print("0x{:02X}, FAIL".format(read_reg_val), end='')
+            f.write("0x{:02X} != 0x{:02X}, FAIL".format(read_reg_val))
 else:
     print("\nWrite {} Lut Fail.".format(driveInstance.aer_reg[1]), end='')
     f.write("\nWrite {} Lut Fail.".format(driveInstance.aer_reg[1]))
 
-
+print("\nRestore LUT...")
+f.write("\nRestore LUT...")
+if 'OK' == cmd_write_table('lut', driveInstance.apc_table[0], 0, lut_apc):
+    print("\nFinish restore APC LUT")
+    f.write("\nFinish restore APC LUT")
+if 'OK' == cmd_write_table('lut', driveInstance.aer_table[0], 0, lut_aer):
+    print("\nFinish restore AER LUT")
+    f.write("\nFinish restore AER LUT")
+if 'OK' == cmd_write_table('lut', driveInstance.maxmod_table[0], 0, lut_max_mod):
+    print("\nFinish restore MAX MOD LUT")
+    f.write("\nFinish restore MAX MOD LUT")
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)

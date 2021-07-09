@@ -105,17 +105,6 @@ class Driver_GN25L96(Driver):
     mcu_maxmod_adjust = property(getMcuMaxMODIndex, setMcuMaxMODIndex)
 
     #function
-    def cmd_write_lut(self, lookupTable):
-        command_str = 'MCU_SET_TABLE(LUT' + ',' + str(lookupTable[0]) + ',0,' \
-                      + str(lookupTable[1]) + ')'
-        command_str = bytes(command_str, encoding="utf8")
-        strCmdIn = create_string_buffer(command_str)
-        strCmdOutBuff = ctypes.c_ubyte * 8
-        strCmdOut = strCmdOutBuff()
-        cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
-        ret = chr(strCmdOut[0]) + chr(strCmdOut[1])
-        return  ret
-
     def cmd_mcu_set_adjust(self, adjust_index, adjust_mode):
         command_str = 'MCU_SET_ADJUST(' + str(adjust_index) + ',' \
                       + adjust_mode + ', 0, 0, 0, 0)'
@@ -126,15 +115,4 @@ class Driver_GN25L96(Driver):
         cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
         ret = chr(strCmdOut[0]) + chr(strCmdOut[1])
         return ret
-
-    def cmd_mcu_i2c_read(self, drv_addr, reg_addr, reg_len):
-        command_str = 'MCU_I2C_READ(' + str(drv_addr) + ',' \
-                      + str(reg_addr) + ',' \
-                      + str(reg_len) + ')'
-        command_str = bytes(command_str, encoding="utf8")
-        strCmdIn = create_string_buffer(command_str)
-        strCmdOutBuff = ctypes.c_ubyte * 8
-        strCmdOut = strCmdOutBuff()
-        cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
-        return strCmdOut
 

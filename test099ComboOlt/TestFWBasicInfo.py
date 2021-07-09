@@ -208,7 +208,7 @@ print("\n***********************************************************************
 print("Firmware Basic configuration test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\Firmware Basic configuration test, start time : {}".format(dateTime))
+f.write("\nFirmware Basic configuration test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)

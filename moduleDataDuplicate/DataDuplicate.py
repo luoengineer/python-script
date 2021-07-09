@@ -250,8 +250,6 @@ for drv_index in range(module_drv_table_nums):
 
 print("\n")
 f.write('\n\n')
-#lut_data = ctypes.c_ubyte*128
-#lut_data_p = lut_data()
 lut_tmp_data = []
 lut_raw_data = []
 #get raw lut data
