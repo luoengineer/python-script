@@ -1,12 +1,20 @@
 import ctypes
 from ctypes import *
 import time
-import sys
+import random
 import operator
-from classTestEvb import *
-import  random
+import sys
+import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+
+#==============================================================================
 #Test times
+#==============================================================================
 wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
@@ -31,10 +39,21 @@ testEvb = cTestEvb(devUsbIndex)
 #########################################################
 #               Inner Funtion
 #########################################################
-def Sfp_User_Pwd_Entry():
+has_user_password_flag = 1
+
+user_spc_password = [0x46,0x54,0x45,0x31]
+user_189_password = [0x79,0x80,0x82,0x83]
+user_common_password = [0x00,0x00,0x10,0x11]
+
+if 1 == has_user_password_flag:
+    user_password = user_spc_password
+
+def Sfp_User_Pwd_Entry(usepassword):
     i2cWriteBuf = c_ubyte * 4
-    userPwd = i2cWriteBuf(0x00, 000, 0x10, 0x11)
-    _ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 123, 4, byref(userPwd))
+    userPwd = i2cWriteBuf()
+    for item in range(4):
+        userPwd[item] = usepassword[item]
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 123, 4, byref(userPwd))
     del i2cWriteBuf, userPwd
 
 def random_int_list(start, stop, length):
@@ -56,7 +75,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 #########################################################
@@ -67,7 +86,7 @@ strCmdIn = create_string_buffer(b'MCU_GET_VERSION()')
 strCmdOutBuff = ctypes.c_ubyte*64
 strCmdOut = strCmdOutBuff()
 strFwVer = []
-retStauts = _cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
+retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
 if 0 == retStauts:
     strFwVer = [chr(strCmdOut[item]) for item in range(len(strCmdOut)) if 0 != strCmdOut[item]]
 else:
@@ -86,10 +105,10 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("Password level test, start time : {}".format(dateTime))
+print("Generic OLT Password level test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nPassword level test, start time : {}".format(dateTime))
+f.write("\nGeneric OLT Password level test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -102,7 +121,7 @@ A0RawDataBuff = ctypes.c_ubyte*128
 A0RawReadByte = A0RawDataBuff()
 f.write("\nA0 0-127 raw data: \n")
 Res = 0xFF
-Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, A0RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, A0RawReadByte)
 if 0 == Res:
     for item in range(len(A0RawReadByte)):
         f.write(str(hex(A0RawReadByte[item]))+',')
@@ -116,7 +135,7 @@ A0_direct_high_RawDataBuff = ctypes.c_ubyte*128
 A0_direct_high_RawReadByte = A0_direct_high_RawDataBuff()
 f.write("\nA0 direct high raw data: \n")
 Res = 0xFF
-Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, A0_direct_high_RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, A0_direct_high_RawReadByte)
 if 0 == Res:
     for item in range(len(A0_direct_high_RawReadByte)):
         f.write(str(hex(A0_direct_high_RawReadByte[item]))+',')
@@ -126,12 +145,12 @@ else:
     f.close()
     sys.exit()
 
-#read raw A2 data
+#read raw A2 direct data
 A2_Direct_RawDataBuff = ctypes.c_ubyte*96
 A2_Direct_RawReadByte = A2_Direct_RawDataBuff()
 f.write("\nA2 0-95 raw data: \n")
 Res = 0xFF
-Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_RawReadByte)
 if 0 == Res:
     for item in range(len(A2_Direct_RawReadByte)):
         f.write(str(hex(A2_Direct_RawReadByte[item]))+',')
@@ -140,12 +159,13 @@ else:
     print('read A2 0-95 raw data fail.' + '\n')
     f.close()
     sys.exit()
-
+	
+#read raw A2 direct high data
 A2_Direct_High_RawDataBuff = ctypes.c_ubyte*128
 A2_Direct_High_RawReadByte = A2_Direct_High_RawDataBuff()
 f.write("\nA2 128-255 raw data: \n")
 Res = 0xFF
-Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_RawReadByte)
 if 0 == Res:
     for item in range(len(A2_Direct_High_RawReadByte)):
         f.write(str(hex(A2_Direct_High_RawReadByte[item]))+',')
@@ -181,7 +201,7 @@ for item in range(len(A0WriteByte)):
     f.write(str(hex(A0WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0WriteByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
@@ -191,7 +211,7 @@ time.sleep(1)
 
 A0ReadDataBuff = ctypes.c_ubyte * 256
 randomReadByte = A0ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -243,7 +263,7 @@ for item in range(len(A0WriteByte)):
     f.write(str(hex(A0WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0WriteByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
@@ -253,7 +273,7 @@ time.sleep(1)
 
 A0ReadDataBuff = ctypes.c_ubyte * 256
 randomReadByte = A0ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -293,7 +313,7 @@ time.sleep(1)
 print("\nwrite factory passsword, write A0 direct  ...")
 f.write("\nwrite factory passsword, write A0 direct ...")
 
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 A0WriteDataBuff = [0x00] * 128
@@ -307,7 +327,7 @@ for item in range(len(A0WriteByte)):
     f.write(str(hex(A0WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0WriteByte))
 time.sleep(2)
 
 testEvb.AteAllPowerOff()
@@ -317,7 +337,7 @@ time.sleep(1)
 
 A0ReadDataBuff = ctypes.c_ubyte * 128
 randomReadByte = A0ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -368,7 +388,7 @@ for item in range(len(A0WriteByte)):
     f.write(str(hex(A0WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0WriteByte))
 time.sleep(2)
 
 testEvb.AteAllPowerOff()
@@ -378,7 +398,7 @@ time.sleep(1)
 
 A0ReadDataBuff = ctypes.c_ubyte * 128
 randomReadByte = A0ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -409,8 +429,131 @@ time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
 
+
+if 1 == has_user_password_flag:
+    #########################################################
+    #   test step 5 : user password write A0 0-127
+    #########################################################
+    print("\nwrite user passsword, write A0 direct  ...")
+    f.write("\nwrite user passsword, write A0 direct ...")
+
+    Sfp_User_Pwd_Entry(user_password)
+    time.sleep(1)
+
+    A0WriteDataBuff = [0x00] * 128
+    A0WriteDataBuff = random_int_list(0, 256, 128)
+    A0WriteByte = (c_ubyte * 128)(*A0WriteDataBuff)
+
+    print('write :\n')
+    f.write('write :\n')
+    for item in range(len(A0WriteByte)):
+        print("{},".format(str(hex(A0WriteByte[item]))), end='')
+        f.write(str(hex(A0WriteByte[item])) + ',')
+    f.write('\n')
+    print("\n")
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0WriteByte))
+    time.sleep(2)
+
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
+
+    A0ReadDataBuff = ctypes.c_ubyte * 128
+    randomReadByte = A0ReadDataBuff()
+    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
+
+    print('read :\n')
+    f.write('read :\n')
+    for item in range(len(randomReadByte)):
+        print("{},".format(str(hex(randomReadByte[item]))), end='')
+        f.write(str(hex(randomReadByte[item])) + ',')
+    print('\n')
+    f.write('\n')
+
+    wr_and_rd_success = 0
+    for item in range(len(randomReadByte)):
+        if randomReadByte[item] == A0WriteByte[item]:
+            wr_and_rd_success += 1
+    print("\n")
+    f.write("\n")
+    if wr_and_rd_success == 128:
+        f.write('PASS : user password, write A0 direct data equal read data.' + '\n\n')
+        print("PASS: user password, write A0 direct data equal read data.")
+    else:
+        f.write('ERROR : user password, write A0 direct data not equal read data.' + '\n\n')
+        print("ERROR: user password, write A0 direct data not equal read data.")
+
+    print("\nPOR...")
+    f.write("\nPOR...")
+    # clear any password
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
+
+    #########################################################
+    #   test step 6 : user password write A0 128-255
+    #########################################################
+    print("\nwrite user passsword ...")
+    f.write("\nwrite user passsword ...")
+
+    Sfp_User_Pwd_Entry(user_password)
+    time.sleep(1)
+
+    A0WriteDataBuff = [0x00] * 128
+    A0WriteDataBuff = random_int_list(0, 256, 128)
+    A0WriteByte = (c_ubyte * 128)(*A0WriteDataBuff)
+
+    print('\nwrite :\n')
+    f.write('\nwrite :\n')
+    for item in range(len(A0WriteByte)):
+        print("{},".format(str(hex(A0WriteByte[item]))), end='')
+        f.write(str(hex(A0WriteByte[item])) + ',')
+    f.write('\n')
+    print("\n")
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0WriteByte))
+    time.sleep(2)
+
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
+
+    A0ReadDataBuff = ctypes.c_ubyte * 128
+    randomReadByte = A0ReadDataBuff()
+    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
+
+    print('read :\n')
+    f.write('read :\n')
+    for item in range(len(randomReadByte)):
+        print("{},".format(str(hex(randomReadByte[item]))), end='')
+        f.write(str(hex(randomReadByte[item])) + ',')
+    print('\n')
+    f.write('\n')
+
+    wr_and_rd_success = 0
+    for item in range(len(randomReadByte)):
+        if randomReadByte[item] == A0WriteByte[item]:
+            wr_and_rd_success += 1
+    print("\n")
+    f.write("\n")
+    if wr_and_rd_success == 128:
+        f.write('PASS : user password, write A0 direct high data equal read data.' + '\n\n')
+        print("PASS: user password, write A0 direct high data equal read data.")
+    else:
+        f.write('ERROR : user password, write A0 direct high data not equal read data.' + '\n\n')
+        print("ERROR: user password, write A0 direct high data not equal read data.")
+
+    print("\nPOR...")
+    f.write("\nPOR...")
+    # clear any password
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
 #########################################################
-#    test step 6 :  no any password write A2 0-95
+#    test step 7 :  no any password write A2 0-95
 #########################################################
 print("\nNo any passsword, write A2 direct ...")
 f.write("\nNo any passsword, wirte A2 direct ...")
@@ -436,7 +579,7 @@ time.sleep(1)
 
 A2_Direct_ReadDataBuff = ctypes.c_ubyte * 96
 A2_Direct_ReadByte = A2_Direct_ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -468,7 +611,7 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 
 #########################################################
-#    test step 7 :  no any password write A2 128-255
+#    test step 8 :  no any password write A2 128-255
 #########################################################
 print("\nNo any passsword, write A2 direct high ...")
 f.write("\nNo any passsword, write A2 direct high ...")
@@ -484,7 +627,7 @@ for item in range(len(A2_Direct_High_WriteByte)):
     f.write(str(hex(A2_Direct_High_WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, byref(A2_Direct_High_WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, byref(A2_Direct_High_WriteByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
@@ -494,7 +637,7 @@ time.sleep(1)
 
 A2_Direct_High_ReadDataBuff = ctypes.c_ubyte * 128
 A2_Direct_High_ReadByte = A2_Direct_High_ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -520,16 +663,16 @@ else:
 
 
 #########################################################
-#    test step 8 :  factory password write A2 0-95
+#    test step 9 :  factory password write A2 0-95
 #########################################################
 print("\nwrite factory passsword, write A2 direct ...")
 f.write("\nwrite factory passsword, wirte A2 direct ...")
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 
 A2_Direct_WriteDataBuff = [0x00] * 96
 A2_Direct_WriteDataBuff = random_int_list(0, 256, 96)
 A2_Direct_WriteByte = (c_ubyte * 96)(*A2_Direct_WriteDataBuff)
-
+A2_Direct_WriteByte[92] = 0
 print('\nwrite :\n')
 f.write('\nwrite :\n')
 for item in range(len(A2_Direct_WriteByte)):
@@ -537,7 +680,7 @@ for item in range(len(A2_Direct_WriteByte)):
     f.write(str(hex(A2_Direct_WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2_Direct_WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2_Direct_WriteByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
@@ -547,7 +690,7 @@ time.sleep(1)
 
 A2_Direct_ReadDataBuff = ctypes.c_ubyte * 96
 A2_Direct_ReadByte = A2_Direct_ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -580,7 +723,7 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 
 #########################################################
-#    test step 9 :  factory password write A2 128-255
+#    test step 10 :  factory password write A2 128-255
 #########################################################
 print("\nwrite factory passsword, write A2 direct high ...")
 f.write("\nwrite factory passsword, write A2 direct high ...")
@@ -597,7 +740,7 @@ for item in range(len(A2_Direct_High_WriteByte)):
     f.write(str(hex(A2_Direct_High_WriteByte[item])) + ',')
 f.write('\n')
 print("\n")
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, byref(A2_Direct_High_WriteByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, byref(A2_Direct_High_WriteByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
@@ -607,7 +750,7 @@ time.sleep(1)
 
 A2_Direct_High_ReadDataBuff = ctypes.c_ubyte * 128
 A2_Direct_High_ReadByte = A2_Direct_High_ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
 
 print('read :\n')
 f.write('read :\n')
@@ -632,8 +775,124 @@ else:
     print("ERROR: factory password, write A2 direct high data not equal read data.")
 
 
+if 1 == has_user_password_flag:
+    #########################################################
+    #    test step 11 :  user password write A2 0-95
+    #########################################################
+    print("\nwrite user passsword, write A2 direct ...")
+    f.write("\nwrite user passsword, wirte A2 direct ...")
+    Sfp_User_Pwd_Entry(user_password)
+
+    A2_Direct_WriteDataBuff = [0x00] * 96
+    A2_Direct_WriteDataBuff = random_int_list(0, 256, 96)
+    A2_Direct_WriteByte = (c_ubyte * 96)(*A2_Direct_WriteDataBuff)
+    A2_Direct_WriteByte[92] = 0
+
+    print('\nwrite :\n')
+    f.write('\nwrite :\n')
+    for item in range(len(A2_Direct_WriteByte)):
+        print("{},".format(str(hex(A2_Direct_WriteByte[item]))), end='')
+        f.write(str(hex(A2_Direct_WriteByte[item])) + ',')
+    f.write('\n')
+    print("\n")
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2_Direct_WriteByte))
+    time.sleep(1)
+
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
+
+    A2_Direct_ReadDataBuff = ctypes.c_ubyte * 96
+    A2_Direct_ReadByte = A2_Direct_ReadDataBuff()
+    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
+
+    print('read :\n')
+    f.write('read :\n')
+    for item in range(len(A2_Direct_ReadByte)):
+        print("{},".format(str(hex(A2_Direct_ReadByte[item]))), end='')
+        f.write(str(hex(A2_Direct_ReadByte[item])) + ',')
+    print('\n')
+    f.write('\n')
+
+    wr_and_rd_success = 0
+    for item in range(96):
+        if A2_Direct_ReadByte[item] == A2_Direct_WriteByte[item]:
+            wr_and_rd_success += 1
+    print("\n")
+    f.write("\n")
+    if wr_and_rd_success == 96:
+        # totalSuccess += 1
+        f.write('PASS : user password, write A2 direct data equal read data.' + '\n\n')
+        print("PASS: user password, write A2 direct data equal read data.")
+    else:
+        f.write('ERROR : user password, write A2 direct data not equal read data.' + '\n\n')
+        print("ERROR: user password, write A2 direct data not equal read data.")
+
+    print("POR...")
+    f.write("POR...")
+    # clear any password
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
+
+    #########################################################
+    #    test step 12 :  factory password write A2 128-255
+    #########################################################
+    print("\nwrite user passsword, write A2 direct high ...")
+    f.write("\nwrite user passsword, write A2 direct high ...")
+    Sfp_User_Pwd_Entry(user_password)
+
+    A2_Direct_High_WriteDataBuff = [0x00] * 128
+    A2_Direct_High_WriteDataBuff = random_int_list(0, 256, 128)
+    A2_Direct_High_WriteByte = (c_ubyte * 128)(*A2_Direct_High_WriteDataBuff)
+
+    print('\nwrite :\n')
+    f.write('\nwrite :\n')
+    for item in range(len(A2_Direct_High_WriteByte)):
+        print("{},".format(str(hex(A2_Direct_High_WriteByte[item]))), end='')
+        f.write(str(hex(A2_Direct_High_WriteByte[item])) + ',')
+    f.write('\n')
+    print("\n")
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128,
+                                     byref(A2_Direct_High_WriteByte))
+    time.sleep(1)
+
+    testEvb.AteAllPowerOff()
+    time.sleep(1)
+    testEvb.AteAllPowerOn()
+    time.sleep(1)
+
+    A2_Direct_High_ReadDataBuff = ctypes.c_ubyte * 128
+    A2_Direct_High_ReadByte = A2_Direct_High_ReadDataBuff()
+    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
+
+    print('read :\n')
+    f.write('read :\n')
+    for item in range(len(A2_Direct_High_ReadByte)):
+        print("{},".format(str(hex(A2_Direct_High_ReadByte[item]))), end='')
+        f.write(str(hex(A2_Direct_High_ReadByte[item])) + ',')
+    print('\n')
+    f.write('\n')
+
+    wr_and_rd_success = 0
+    for item in range(128):
+        if A2_Direct_High_ReadByte[item] == A2_Direct_High_WriteByte[item]:
+            wr_and_rd_success += 1
+    print("\n")
+    f.write("\n")
+    if wr_and_rd_success == 128:
+        # totalSuccess += 1
+        f.write('PASS : user password, write A2 direct high data equal read data.' + '\n\n')
+        print("PASS: user password, write A2 direct high data equal read data.")
+    else:
+        f.write('ERROR : user password, write A2 direct high data not equal read data.' + '\n\n')
+        print("ERROR: user password, write A2 direct high data not equal read data.")
+
+
 #########################################################
-#    test step 10 :  restore all
+#    test step 13 :  restore all
 #########################################################
 #restore A0 0-127
 print("POR...")
@@ -647,19 +906,19 @@ time.sleep(1)
 Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0RawReadByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, byref(A0RawReadByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
 time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 A0ReadDataBuff = ctypes.c_ubyte * 128
 randomReadByte = A0ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 0, 128, randomReadByte)
 if True == operator.eq(A0RawDataBuff, A0ReadDataBuff):
     f.write('A0 direct restore success.' + '\n')
     print("A0 direct restore success.")
@@ -678,19 +937,19 @@ time.sleep(1)
 Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0_direct_high_RawReadByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, byref(A0_direct_high_RawReadByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
 time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 A0ReadDataBuff = ctypes.c_ubyte * 128
 randomReadByte = A0ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[0], 128, 128, randomReadByte)
 if True == operator.eq(A0_direct_high_RawDataBuff, A0ReadDataBuff):
     f.write('A0 direct high restore success.' + '\n')
     print("A0 direct high restore success.")
@@ -710,19 +969,19 @@ time.sleep(1)
 Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
-_ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2_Direct_RawReadByte))
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2_Direct_RawReadByte))
 time.sleep(1)
 
 testEvb.AteAllPowerOff()
 time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 A2_Direct_ReadDataBuff = ctypes.c_ubyte * 96
 A2_Direct_ReadByte = A2_Direct_ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, A2_Direct_ReadByte)
 if True == operator.eq(A2_Direct_RawDataBuff, A2_Direct_ReadDataBuff):
     f.write('A2 direct restore success.' + '\n')
     print("A2 direct restore success.")
@@ -739,7 +998,7 @@ time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
 
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, byref(A2_Direct_High_RawReadByte))
@@ -749,12 +1008,12 @@ testEvb.AteAllPowerOff()
 time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 A2_Direct_High_ReadDataBuff = ctypes.c_ubyte * 128
 A2_Direct_High_ReadByte = A2_Direct_High_ReadDataBuff()
-_ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
+testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128, A2_Direct_High_ReadByte)
 if True == operator.eq(A2_Direct_High_RawDataBuff, A2_Direct_High_ReadDataBuff):
     f.write('A2 direct high restore success.' + '\n')
     print("A2 direct high restore success.")
@@ -766,10 +1025,10 @@ else:
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("Read-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("Generic OLT Password level test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nRead-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\nGeneric OLT Password level test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 
 testEvb.AteAllPowerOff()

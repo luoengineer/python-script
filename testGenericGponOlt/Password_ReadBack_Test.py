@@ -1,11 +1,21 @@
 import ctypes
 from ctypes import *
 import time
+import random
+import operator
 import sys
+import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
 from classTestEvb import *
 
-#Test times
-wr_and_rd_times  = 2
+#==============================================================================
+# Test times
+#==============================================================================
+#wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -29,16 +39,24 @@ testEvb = cTestEvb(devUsbIndex)
 #########################################################
 #               Inner Funtion
 #########################################################
-def Sfp_User_Pwd_Entry():
+user_spc_password = [0x46,0x54,0x45,0x31]
+user_189_password = [0x79,0x80,0x82,0x83]
+user_common_password = [0x00,0x00,0x10,0x11]
+
+user_password = user_spc_password
+
+def Sfp_User_Pwd_Entry(usepassword):
     i2cWriteBuf = c_ubyte * 4
-    userPwd = i2cWriteBuf(0x00, 000, 0x10, 0x11)
-    _ateapidll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 123, 4, byref(userPwd))
+    userPwd = i2cWriteBuf()
+    for item in range(4):
+        userPwd[item] = usepassword[item]
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 123, 4, byref(userPwd))
     del i2cWriteBuf, userPwd
 
 def read_back_password():
     i2cReadBuf = ctypes.c_ubyte*4
     i2cReadByte = i2cReadBuf()
-    Res = _ateapidll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 123, 4, i2cReadByte)
+    Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 123, 4, i2cReadByte)
     if 0 == Res:
         for item in range(len(i2cReadByte)):
             if 0xFF == i2cReadByte[item]:
@@ -64,7 +82,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 
 #########################################################
@@ -75,7 +93,7 @@ strCmdIn = create_string_buffer(b'MCU_GET_VERSION()')
 strCmdOutBuff = ctypes.c_ubyte*64
 strCmdOut = strCmdOutBuff()
 strFwVer = []
-retStauts = _cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
+retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
 if 0 == retStauts:
     strFwVer = [chr(strCmdOut[item]) for item in range(len(strCmdOut)) if 0 != strCmdOut[item]]
 else:
@@ -94,10 +112,10 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("Read-back password test, start time : {}".format(dateTime))
+print("Generic OLT Read-back password test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nRead-back password test, start time : {}".format(dateTime))
+f.write("\nGeneric OLT Read-back password test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -125,11 +143,12 @@ read_back_password()
 #########################################################
 print("\nwrite factory passsword ...")
 f.write("\nwrite factory passsword ...")
-testEvb.Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_Factory_Pwd_Entry(user_password_type)
 print("\nread back A2[123-126] ...")
 f.write("\nread back A2[123-126] ...")
 read_back_password()
 
+#clear any password
 print("POR...")
 f.write("POR...")
 #clear any password
@@ -141,7 +160,7 @@ time.sleep(1)
 #write user default write password
 print("\nwrite user passsword ...")
 f.write("\nwrite user passsword ...")
-Sfp_User_Pwd_Entry()
+Sfp_User_Pwd_Entry(user_password)
 print("\nread back A2[123-126] ...")
 f.write("\nread back A2[123-126] ...")
 read_back_password()
@@ -150,10 +169,10 @@ read_back_password()
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("Read-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("Generic OLT Read-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nRead-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\nGeneric OLT Read-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 
 testEvb.AteAllPowerOff()
