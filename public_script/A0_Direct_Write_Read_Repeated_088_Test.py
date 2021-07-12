@@ -15,7 +15,7 @@ from classTestEvb import *
 #==============================================================================
 # Test times
 #==============================================================================
-wr_and_rd_times  = 500
+wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -158,11 +158,11 @@ for times in range(wr_and_rd_times):
 
     if wr_and_rd_success == 128:
         totalSuccess += 1
-        f.write('Round.{}: A0 write data equal read data.'.format(times)+'\n\n')
-        print("Round.{} A0 write data equal read data.".format(times))
+        f.write('Round.{}: A0 write data equal read data, OK'.format(times)+'\n\n')
+        print("Round.{} A0 write data equal read data, OK".format(times))
     else:
-        f.write('Round.{}: A0 write data not equal read data.'.format(times)+'\n\n')
-        print('Round.{}: A0 write data not equal read data.'.format(times)+'\n\n')
+        f.write('Round.{}: A0 write data not equal read data, FAIL'.format(times)+'\n\n')
+        print('Round.{}: A0 write data not equal read data, FAIL'.format(times)+'\n\n')
 
     testEvb.AteAllPowerOff()
     time.sleep(1)

@@ -3,9 +3,14 @@ from ctypes import *
 import time
 import random
 import operator
+import sys
+import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
 from cmdServ import *
 from classTestEvb import *
-import sys
 
 #==============================================================================
 # Test times
@@ -200,10 +205,10 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("OLT Basic configuration test, start time : {}".format(dateTime))
+print("Firmware Basic configuration test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nOLT Basic configuration test, start time : {}".format(dateTime))
+f.write("\nFirmware Basic configuration test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
