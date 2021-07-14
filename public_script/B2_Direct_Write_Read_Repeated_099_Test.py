@@ -81,12 +81,13 @@ strFwVer = ''.join(strFwVer)
 #                 Open File
 #########################################################
 startTick = time.time()
-#dateTime = time.strptime(time.asctime())
 dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("B2 Direct Write and Read stress test, start time : {}".format(dateTime))
@@ -94,8 +95,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nB2 Direct Write and Read stress test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nB2 Direct Write and Read stress test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f_report.write('\n'+testTitle+'\n')
 
 B2RawDataBuff = ctypes.c_ubyte*96
 B2RawReadByte = B2RawDataBuff()
@@ -171,10 +176,13 @@ for times in range(wr_and_rd_times):
 if wr_and_rd_times == totalSuccess:
     print('B2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('B2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
+    f_report.write('B2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
     print('B2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('B2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
+    f_report.write('B2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
+f_report.write('\n')
 
 #restore B2 Direct
 testEvb.AteAllPowerOn()
@@ -201,6 +209,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nB2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nB2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

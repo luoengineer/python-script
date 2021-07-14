@@ -136,7 +136,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("099 B2 encryption test, start time : {}".format(dateTime))
@@ -144,9 +146,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\n099 B2 encryption test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\n099 B2 encryption test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
+f_report.write('\n'+testTitle+'\n')
 print("POR...")
 f.write("POR...")
 #clear any password
@@ -158,8 +163,9 @@ time.sleep(1)
 #########################################################
 #         Read with no any password(default)
 #########################################################
-print("\nNot write any password, read B2 Direct High")
-f.write("\nNot write any password, read B2 Direct High\n")
+print("\nNo any password, read B2 Direct High")
+f.write("\nNo any password, read B2 Direct High\n")
+f_report.write("\nNot write any password, read B2 Direct High\n")
 
 B2RawDataBuff = ctypes.c_ubyte*128
 B2RawReadByte = B2RawDataBuff()
@@ -183,9 +189,11 @@ if "fail" == ret:
 if True == ret:
     print("\nError: B2 Direct High has been writen with no any password")
     f.write("\nError: B2 Direct High has been writen with no any password\n")
+    f_report.write("\nError: B2 Direct High has been writen with no any password\n")
 else:
     print("\nOK: B2 Direct High has not been writen with no any password")
     f.write("\nOK: B2 Direct High has not been writen with no any password\n")
+    f_report.write("\nOK: B2 Direct High has not been writen with no any password\n")
 
 ret = restore_default_data()
 if "fail" == ret:
@@ -209,6 +217,7 @@ time.sleep(1)
 #########################################################
 print("\nInput user reading password, read B2 Direct High")
 f.write("\nInput user reading password, read B2 Direct High\n")
+f_report.write("\nInput user reading password, read B2 Direct High\n")
 Sfp_User_Read_099Pwd_Entry()
 time.sleep(1)
 
@@ -235,6 +244,7 @@ if 0 == Res:
 
 print("\nWrite to B2 Direct High")
 f.write("\nWrite to B2 Direct High\n")
+f_report.write("\nWrite to B2 Direct High\n")
 ret = i2c_write_verify()
 if "fail" == ret:
     print("I2C read fail, stop test ! ")
@@ -242,9 +252,11 @@ if "fail" == ret:
 if True == ret:
     print("\nError: B2 Direct High has been writen with user reading password")
     f.write("\nError: B2 Direct High has been writen with user reading password\n")
+    f_report.write("\nError: B2 Direct High has been writen with user reading password\n")
 else:
     print("\nOK: B2 Direct High has not been writen with user reading password")
     f.write("\nOK: B2 Direct High has not been writen with user reading password\n")
+    f_report.write("\nOK: B2 Direct High has not been writen with user reading password\n")
 
 ret = restore_default_data()
 if "fail" == ret:
@@ -267,6 +279,7 @@ time.sleep(1)
 #########################################################
 print("\nInput user writing password, read B2 Direct High")
 f.write("\nInput user writing password, read B2 Direct High\n")
+f_report.write("\nInput user writing password, read B2 Direct High\n")
 Sfp_User_Write_099Pwd_Entry()
 time.sleep(1)
 B2RawDataBuff = ctypes.c_ubyte*128
@@ -292,6 +305,7 @@ if 0 == Res:
 
 print("\nWrite to B2 Direct High")
 f.write("\nWrite to B2 Direct High\n")
+f_report.write("\nWrite to B2 Direct High\n")
 ret = i2c_write_verify()
 if "fail" == ret:
     print("I2C read fail, stop test ! ")
@@ -299,9 +313,11 @@ if "fail" == ret:
 if True == ret:
     print("\nOK: B2 Direct High has been writen with user wrting password")
     f.write("\nOK: B2 Direct High has been writen with user writing password\n")
+    f_report.write("\nOK: B2 Direct High has been writen with user writing password\n")
 else:
     print("\nError: B2 Direct High has not been writen with user writing password")
     f.write("\nError: B2 Direct High has not been writen with user writing password\n")
+    f_report.write("\nError: B2 Direct High has not been writen with user writing password\n")
 
 ret = restore_default_data()
 if "fail" == ret:
@@ -324,6 +340,7 @@ time.sleep(1)
 #########################################################
 print("\nInput factory password, read B2 Direct High")
 f.write("\nInput factory password, read B2 Direct High\n")
+f_report.write("\nInput factory password, read B2 Direct High\n")
 Sfp_Factory_Pwd_Entry(user_password_type)
 time.sleep(1)
 B2RawDataBuff = ctypes.c_ubyte*128
@@ -350,6 +367,7 @@ if 0 == Res:
 
 print("\nWrite to B2 Direct High")
 f.write("\nWrite to B2 Direct High\n")
+f_report.write("\nWrite to B2 Direct High\n")
 ret = i2c_write_verify()
 if "fail" == ret:
     print("I2C read fail, stop test ! ")
@@ -357,9 +375,11 @@ if "fail" == ret:
 if True == ret:
     print("\nOK: B2 Direct High has been writen with factory password")
     f.write("\nOK: B2 Direct High has been writen with factory password\n")
+    f_report.write("\nOK: B2 Direct High has been writen with factory password\n")
 else:
     print("\nError: B2 Direct High has not been writen with factory password")
     f.write("\nError: B2 Direct High has not been writen with factory password\n")
+    f_report.write("\nError: B2 Direct High has not been writen with factory password\n")
 
 ret = restore_default_data()
 if "fail" == ret:
@@ -380,7 +400,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\n099 B2 encryption test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
-
+f_report.write("\n****************************************************************************")
+f_report.write("\n099 B2 encryption test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

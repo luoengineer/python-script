@@ -30,12 +30,12 @@ devUsbIndex = 0
 devSffChannel = 1
 devSfpChannel = 2
 
-module_adc_chn_nums = 7
-module_adjust_chn_nums = 8
-module_dac_chn_nums = 2
-module_base_talbe_nums = 4
-module_drv_table_nums = 1
-module_lutable_nums = 4
+module_adc_chn_nums = 6+1
+module_adjust_chn_nums = 5+1
+module_dac_chn_nums = 1+1
+module_base_talbe_nums = 3+1
+module_drv_table_nums = 0+1
+module_lutable_nums = 3+1
 
 #########################################################
 #               create object
@@ -202,7 +202,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("Firmware Basic configuration test, start time : {}".format(dateTime))
@@ -210,9 +212,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nFirmware Basic configuration test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nFirmware Basic configuration, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
+f_report.write('\n'+testTitle+'\n')
 #########################################################
 #                 MCU Get ADC
 #########################################################
@@ -261,12 +266,14 @@ lut_raw_data = []
 #get raw lut data
 print("\nRead lut raw data ...")
 f.write("\nRead lut raw data ...")
+f_report.write("\nRead lut raw data ...")
 for lut_index in range(module_lutable_nums):
     lut_raw_data.append([])
     ret, lut_tmp_data = cmd_read_table('lut', lut_index, 0, 128)
     if 'OK' == ret:
         print('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
         f.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
+        f_report.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
         #print("data size : {}".format(len(lut_tmp_data)))
         for item in range(len(lut_tmp_data)):
             print("0x{:02X}".format(lut_tmp_data[item]), end=',')
@@ -275,6 +282,7 @@ for lut_index in range(module_lutable_nums):
     else:
         print("\nread lut {} table fail".format(lut_index))
         f.write("\nread lut {} table fail".format(lut_index))
+        f_report.write("\nread lut {} table fail".format(lut_index))
 
 #write test data to lut
 print("\n test writing lut ...")
@@ -284,9 +292,11 @@ for lut_index in range(module_lutable_nums):
     if 'OK' == cmd_write_table('lut', lut_index, 0, lut_test_data):
         print("lut {} wirting data ok!".format(lut_index))
         f.write("\nlut {} wirting data ok!".format(lut_index))
+        f_report.write("\nlut {} wirting data ok!".format(lut_index))
     else:
         print("lut {} writing data fail!".format(lut_index))
         f.write("\nlut {} writing data fail!".format(lut_index))
+        f_report.write("\nlut {} writing data fail!".format(lut_index))
 
 testEvb.AteAllPowerOff()
 time.sleep(1)
@@ -302,14 +312,17 @@ for lut_index in range(module_lutable_nums):
     if 'OK' == ret and lut_readback_data == lut_test_data:
         print("lut {} test wrting ok!".format(lut_index))
         f.write("\nlut {} test wirting ok!".format(lut_index))
+        f_report.write("\nlut {} test wirting ok!".format(lut_index))
     else:
         print("lut {} test wrting fail!".format(lut_index))
         f.write("\nlut {} test wirting fail!".format(lut_index))
+        f_report.write("\nlut {} test wirting fail!".format(lut_index))
 
 
 #restore lut raw data
 print("\nRestore lut raw data ...")
 f.write("\n\nRestore lut raw data ...")
+f_report.write("\n\nRestore lut raw data ...")
 for lut_index in range(len(lut_raw_data)):
 #for lut_index in lut_raw_data:
     #lut_tmp_data = lut_raw_data[lut_index].copy()
@@ -318,9 +331,11 @@ for lut_index in range(len(lut_raw_data)):
     if 'OK' == cmd_write_table('lut', lut_index, 0, lut_tmp_data):
         print("lut {} wirting ok!".format(lut_index))
         f.write("\nlut {} wirting ok!".format(lut_index))
+        f_report.write("\nlut {} wirting ok!".format(lut_index))
     else:
         print("lut {} writing fail!".format(lut_index))
         f.write("\nlut {} writing fail!".format(lut_index))
+        f_report.write("\nlut {} writing fail!".format(lut_index))
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
@@ -330,6 +345,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nFirmware Basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nFirmware Basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

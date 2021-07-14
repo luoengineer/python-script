@@ -1,13 +1,25 @@
 import ctypes
 from ctypes import *
 import time
-from classTestEvb import *
+import random
+import operator
 import sys
-from sys import path
+import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
+pub_path = os.path.dirname(os.path.dirname(__file__))
+pub_path = os.path.join(pub_path, 'public_script')
+sys.path.append(pub_path)
+from Driver_GN25L96_Class import *
 
+#==============================================================================
 #Test times
+#==============================================================================
 wr_and_rd_times  = 2
 # user type for password
 is_088_Module = 0
@@ -22,32 +34,6 @@ XfpI2cAddr = [0xA0,0xA4]
 devUsbIndex = 0
 devSffChannel = 1
 devSfpChannel = 2
-
-# Driver Base Class
-class Driver(object):
-    def __int__(self, name):
-        self._driver_name = name
-
-    #property driver name
-    def getDriverName(self):
-        return  self._driver_name
-    def setDriverName(self, name):
-        self._driver_name = name
-    driver_name = property(getDriverName, setDriverName)
-
-    #property driver i2c address
-    def getDriverAddr(self):
-        return  self._driver_addr
-    def setDriverAddr(self, address):
-        self._driver_addr = address
-    driver_addr = property(getDriverAddr, setDriverAddr)
-
-    # property driver registers
-    def getDriverRegMap(self):
-        return self._driver_reg_map
-    def setDriverRegMap(self, regmap):
-        self._driver_reg_map = regmap
-    driver_reg_map = property(getDriverRegMap, setDriverRegMap)
 
 # Driver : GN25L96, ONET1131, GN7153B ...
 class Driver_UX3320(Driver):

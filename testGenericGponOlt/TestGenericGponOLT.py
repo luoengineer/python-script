@@ -73,7 +73,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("Generic GPON OLT test, start time : {}".format(dateTime))
@@ -81,10 +83,14 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nGeneric GPON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nA0 Direct High Write and Read stress test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f_report.write('\n'+testTitle+'\n')
 f.close()
-
+f_report.close()
 
 #########################################################
 #               Test Configuration
@@ -95,15 +101,15 @@ A0_WRITE_READ_STRESS_TEST = True
 A2_WRITE_READ_STRESS_TEST = True
 A0_HIGH_WRITE_READ_STRESS_TEST = True
 A2_HIGH_WRITE_READ_STRESS_TEST = True
-Driver_GN25L99_TEST = True
+Driver_GN25L99_TEST = False
 Driver_GN25L96_TEST = False
 Driver_UX3320_TEST = False
 Password_READ_BACK_TEST = True
-
 TxPower08uW_Alarm_Warning_TEST = False
 Tx_Soft_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
 Module_Init_Check_TEST = False
+Password_Level_TEST = True
 
 path = os.path.dirname(os.path.dirname(__file__))
 path = os.path.join(path, 'public_script')
@@ -123,6 +129,7 @@ if True == A2_WRITE_READ_STRESS_TEST:
 
 if True == A2_HIGH_WRITE_READ_STRESS_TEST:
     import A2_Direct_High_Write_Read_Repeated_099_Test
+    
 if True == Driver_GN25L96_TEST:
     os.system('.\Driver_GN25L96_Test.py')
 
@@ -144,13 +151,16 @@ if True == Inner_I2C_STRESS_TEST:
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')
 
-
 if True == TxPower08uW_Alarm_Warning_TEST:
     os.system('.\Tx08uw_AlarmWarning_Test.py')
+
+if True == Password_Level_TEST:
+    os.system('.\Password_Level_Test.py')
 
 # A0 write and read repeated
 
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
@@ -159,6 +169,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nGeneric GPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nGeneric GPON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()
