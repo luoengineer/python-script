@@ -46,7 +46,7 @@ user_189_password = [0x79,0x80,0x82,0x83]
 user_common_password = [0x00,0x00,0x10,0x11]
 
 if 1 == has_user_password_flag:
-    user_password = user_spc_password
+    user_password = user_spc_password #select user password
 
 def Sfp_User_Pwd_Entry(usepassword):
     i2cWriteBuf = c_ubyte * 4

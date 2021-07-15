@@ -3,9 +3,14 @@ from ctypes import *
 import time
 import random
 import operator
+import sys
+import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
 from cmdServ import *
 from classTestEvb import *
-import sys
 
 #==============================================================================
 # Test times
@@ -25,18 +30,18 @@ devUsbIndex = 0
 devSffChannel = 1
 devSfpChannel = 2
 
-IS_A0_DIRECT = True
-IS_A0_DIRECT_HIGH = True
-IS_A2_DIRECT = True
-IS_A2_DIRECT_HIGH = True
-IS_B0_DIRECT = True
-IS_B0_DIRECT_HIGH = True
-IS_B2_DIRECT = True
-IS_B2_DIRECT_HIGH = True
+SFF_A0_DIRECT = True
+SFF_A0_DIRECT_HIGH = True
+SFF_A2_DIRECT = True
+SFF_A2_DIRECT_HIGH = True
+SFF_B0_DIRECT = False
+SFF_B0_DIRECT_HIGH = False
+SFF_B2_DIRECT = False
+SFF_B2_DIRECT_HIGH = False
 
 module_base_talbe_nums = 4+1
-module_drv_table_nums = 1+1
-module_lutable_nums = 11+1
+module_drv_table_nums = 0+1
+module_lutable_nums = 7+1
 
 #########################################################
 #               create object
@@ -46,58 +51,6 @@ testEvb = cTestEvb(devUsbIndex)
 #########################################################
 #               Inner Funtion
 #########################################################
-
-def mcu_get_base_table(base_table_index):
-    command_str = 'MCU_GET_TABLE(base,' + str(base_table_index) + ',0,128)'
-    command_str = bytes(command_str, encoding="utf8")
-    strCmdIn = create_string_buffer(command_str)
-    strCmdOutBuff = ctypes.c_ubyte * 1024
-    strCmdOut = strCmdOutBuff()
-    retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
-    if 0 == retStauts:
-        print('\nMCU_GET_TABLE base {:d} :'.format(base_table_index))
-        f.write('\nMCU_GET_TABLE base {:d} :'.format(base_table_index))
-        for item in range(len(strCmdOut)):
-            print("{}".format(chr(strCmdOut[item])), end='')
-            f.write(chr(strCmdOut[item]))
-    else:
-        print("\nGet base {} table fail, error code :{:d}".format(base_table_index, retStauts))
-        f.write("\nGet base {} table fail, error code :{:d}".format(base_table_index, retStauts))
-
-def mcu_get_lut(lutable_index):
-    command_str = 'MCU_GET_TABLE(lut,' + str(lutable_index) + ',0,128)'
-    command_str = bytes(command_str, encoding="utf8")
-    strCmdIn = create_string_buffer(command_str)
-    strCmdOutBuff = ctypes.c_ubyte * 1024
-    strCmdOut = strCmdOutBuff()
-    retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
-    if 0 == retStauts:
-        print('\nMCU_GET_TABLE lut {:d} :'.format(lutable_index))
-        f.write('\nMCU_GET_TABLE lut {:d} :'.format(lutable_index))
-        for item in range(len(strCmdOut)):
-            print("{}".format(chr(strCmdOut[item])), end='')
-            f.write(chr(strCmdOut[item]))
-    else:
-        print("\nGet lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
-        f.write("\nGet lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
-
-def mcu_get_driver_table(drv_table_index):
-    command_str = 'MCU_GET_TABLE(driver,' + str(drv_table_index) + ',0,128)'
-    command_str = bytes(command_str, encoding="utf8")
-    strCmdIn = create_string_buffer(command_str)
-    strCmdOutBuff = ctypes.c_ubyte * 1024
-    strCmdOut = strCmdOutBuff()
-    retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
-    if 0 == retStauts:
-        print('\nMCU_GET_TABLE driver {:d} :'.format(drv_table_index))
-        f.write('\nMCU_GET_TABLE driver {:d} :'.format(drv_table_index))
-        for item in range(len(strCmdOut)):
-            print("{}".format(chr(strCmdOut[item])), end='')
-            f.write(chr(strCmdOut[item]))
-    else:
-        print("Get driver {} table fail, error code :{:d}".format(drv_table_index, retStauts))
-        f.write("Get driver {} table fail, error code :{:d}".format(drv_table_index, retStauts))
-
 def i2c_read_sff_table(dev_usb_index, dev_sff_channel, i2c_addr, reg_offset, reg_len):
     i2cReadDataBuff = ctypes.c_ubyte * 128
     i2cRead = i2cReadDataBuff()
@@ -161,42 +114,42 @@ f.write('\n'+testTitle)
 #########################################################
 #               Backup A0,A2...
 #########################################################
-if True == IS_A0_DIRECT:
+if True == SFF_A0_DIRECT:
     print('\nBackup A0 Direct :')
     f.write('\nBackup A0 Direct :\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[0], 0, 128)
 
-if True == IS_A0_DIRECT_HIGH:
+if True == SFF_A0_DIRECT_HIGH:
     print('\nBackup A0 Direct High:')
     f.write('\nBackup A0 Direct High:\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[0], 128, 128)
 
-if True == IS_A2_DIRECT:
+if True == SFF_A2_DIRECT:
     print('\nBackup A2 Direct :')
     f.write('\nBackup A2 Direct :\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 0, 96)
 
-if True == IS_A2_DIRECT_HIGH:
+if True == SFF_A2_DIRECT_HIGH:
     print('\nBackup A2 Direct High:')
     f.write('\nBackup A2 Direct High:\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 128, 128)
 
-if True == IS_B0_DIRECT:
+if True == SFF_B0_DIRECT:
     print('\nBackup B0 Direct :')
     f.write('\nBackup B0 Direct :\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[2], 0, 128)
 
-if True == IS_B0_DIRECT_HIGH:
+if True == SFF_B0_DIRECT_HIGH:
     print('\nBackup B0 Direct High:')
     f.write('\nBackup B0 Direct High:\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[2], 128, 128)
 
-if True == IS_B2_DIRECT:
+if True == SFF_B2_DIRECT:
     print('\nBackup B2 Direct :')
     f.write('\nBackup B2 Direct :\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 0, 96)
 
-if True == IS_B2_DIRECT_HIGH:
+if True == SFF_B2_DIRECT_HIGH:
     print('\nBackup B2 Direct High:')
     f.write('\nBackup B2 Direct High:\n')
     i2c_read_sff_table(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 128, 128)
