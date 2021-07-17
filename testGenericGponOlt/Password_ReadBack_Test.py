@@ -109,7 +109,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("Generic OLT Read-back password test, start time : {}".format(dateTime))
@@ -117,8 +119,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nGeneric OLT Read-back password test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nGeneric OLT Read-back password test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f_report.write('\n'+testTitle+'\n')
 
 print("POR...")
 f.write("POR...")
@@ -133,9 +139,10 @@ time.sleep(1)
 #########################################################
 print("\nno any passsword ...")
 f.write("\nno any passsword ...")
-
+f_report.write("\nno any passsword ...")
 print("\nread back A2[123-126] ...")
 f.write("\nread back A2[123-126] ...")
+f_report.write("\nread back A2[123-126] ...")
 read_back_password()
 
 #########################################################
@@ -143,9 +150,11 @@ read_back_password()
 #########################################################
 print("\nwrite factory passsword ...")
 f.write("\nwrite factory passsword ...")
+f_report.write("\nwrite factory passsword ...")
 Sfp_Factory_Pwd_Entry(user_password_type)
 print("\nread back A2[123-126] ...")
 f.write("\nread back A2[123-126] ...")
+f_report.write("\nread back A2[123-126] ...")
 read_back_password()
 
 #clear any password
@@ -160,9 +169,11 @@ time.sleep(1)
 #write user default write password
 print("\nwrite user passsword ...")
 f.write("\nwrite user passsword ...")
+f_report.write("\nwrite user passsword ...")
 Sfp_User_Pwd_Entry(user_password)
 print("\nread back A2[123-126] ...")
 f.write("\nread back A2[123-126] ...")
+f_report.write("\nread back A2[123-126] ...")
 read_back_password()
 
 
@@ -174,7 +185,10 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nGeneric OLT Read-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\Generic OLT Read-back password test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

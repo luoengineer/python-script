@@ -273,7 +273,7 @@ for lut_index in range(module_lutable_nums):
     if 'OK' == ret:
         print('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
         f.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
-        f_report.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
+        f_report.write('\nMCU_GET_TABLE lut {:d} : OK'.format(lut_index))
         #print("data size : {}".format(len(lut_tmp_data)))
         for item in range(len(lut_tmp_data)):
             print("0x{:02X}".format(lut_tmp_data[item]), end=',')

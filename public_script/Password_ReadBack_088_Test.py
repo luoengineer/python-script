@@ -49,20 +49,24 @@ def Sfp_User_088Pwd_Entry():
 def read_back_password():
     i2cReadBuf = ctypes.c_ubyte*8
     i2cReadByte = i2cReadBuf()
+    result_sum = 0
     res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 119, 8, i2cReadByte)
     if 0 == res:
         for item in range(len(i2cReadByte)):
                 if 0xFF == i2cReadByte[item]:
                     print("A2[{}]=0x{:2X},{}".format(119 + item, i2cReadByte[item], 'ok'))
-                    f.write("\nA2[{}]=0x{:2X},{}".format(119 + item, i2cReadByte[item], 'ok'))
+                    #f.write("\nA2[{}]=0x{:2X},{}".format(119 + item, i2cReadByte[item], 'ok'))
+                	result_sum += 1
                 else:
                     print("A2[{}]=0x{:2X},{}".format(119 + item, i2cReadByte[item], 'error'))
-                    f.write("\nA2[{}]=0x{:2X},{}".format(119 + item, i2cReadByte[item], 'error'))
+                    #f.write("\nA2[{}]=0x{:2X},{}".format(119 + item, i2cReadByte[item], 'error'))
     else:
         print("Read-back A2[119-126] fail ")
-        f.write("Read-back A2[119-126] fail ")
-
-
+        #f.write("Read-back A2[119-126] fail ")
+    if result_sum == 8:
+        return "OK"
+    else:
+        return "FAIL"
 
 #########################################################
 #               Open USB Device
@@ -136,10 +140,15 @@ time.sleep(1)
 print("\nno any passsword ...")
 f.write("\nno any passsword ...")
 f_report.write("\nno any passsword ...")
-print("\nread back A2[119-126] ...")
-f.write("\nread back A2[119-126] ...")
-f_report.write("\nread back A2[123-126] ...")
-read_back_password()
+print("\nread back A2 119-126...")
+f.write("\nread back A2 119-126...")
+f_report.write("\nread back A2 119-126...")
+if read_back_password() == "OK":
+    f.write("\nOK")
+    f_report.write("\nOK")
+else:
+    f.write("\nFAIL")
+    f_report.write("\nFAIL")
 
 #########################################################
 #      write factory password read-back A2[119-126]
@@ -148,10 +157,15 @@ print("\nwrite factory passsword ...")
 f.write("\nwrite factory passsword ...")
 f_report.write("\nwrite factory passsword ...")
 Sfp_Factory_Pwd_Entry(user_password_type)
-print("\nread back A2[119-126] ...")
-f.write("\nread back A2[119-126] ...")
-f_report.write("\nread back A2[119-126] ...")
-read_back_password()
+print("\nread back A2 119-126...")
+f.write("\nread back A2 119-126...")
+f_report.write("\nread back A2 119-126...")
+if read_back_password() == "OK":
+    f.write("\nOK")
+    f_report.write("\nOK")
+else:
+    f.write("\nFAIL")
+    f_report.write("\nFAIL")
 
 #clear any password
 print("POR...")
@@ -169,10 +183,15 @@ print("\nwrite 088 user passsword ...")
 f.write("\nwrite 088 user passsword ...")
 f_report.write("\nwrite 088 user passsword ...")
 Sfp_User_088Pwd_Entry()
-print("\nread back A2[119-126] ...")
-f.write("\nread back A2[119-126] ...")
-f_report.write("\nread back A2[119-126] ...")
-read_back_password()
+print("\nread back A2 119-126...")
+f.write("\nread back A2 119-126...")
+f_report.write("\nread back A2 119-126...")
+if read_back_password() == "OK":
+    f.write("\nOK")
+    f_report.write("\nOK")
+else:
+    f.write("\nFAIL")
+    f_report.write("\nFAIL")
 
 
 dateTime = time.strptime(time.asctime())

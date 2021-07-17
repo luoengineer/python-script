@@ -90,7 +90,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("099 user encryption rule test, start time : {}".format(dateTime))
@@ -98,8 +100,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\n099 user encryption rule test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\n099 user encryption rule test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f_report.write('\n'+testTitle+'\n')
 
 print("POR...")
 f.write("POR...")
@@ -112,78 +118,106 @@ time.sleep(1)
 #########################################################
 #               Read by no any password(default)
 #########################################################
-print("\nNot write password to check user Encryption  area")
+print("\nNot write password to check user Encryption area")
 f.write("\n Not write password to check user Encryption  area\n")
-print("\nCheck password area and A2 128-184")
-f.write("\nCheck password area and A2 128-184\n")
+f_report.write("\n Not write password to check user Encryption  area\n")
+print("\nCheck A2 128-184...")
+f.write("\nCheck A2 128-184...\n")
+f_report.write("\nCheck A2 128-184...\n")
 A2RawDataBuff = ctypes.c_ubyte*57
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
+result_sum = 0
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 57, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
         if 0 == A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'OK'))
+            result_sum+=1
         else:
             print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'Fail'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'Fail'))
+if result_sum == 57:
+    f_report.write("\nA2 128-184 OK")
+else:
+    f_report.write("\nA2 128-184 FAIL")
 
-print("\nCheck A2 232-247")
-f.write("\nCheck A2 232-247\n")
+print("\nCheck A2 232-247...")
+f.write("\nCheck A2 232-247...\n")
+f_report.write("\nCheck A2 232-247...\n")
 A2RawDataBuff = ctypes.c_ubyte*16
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
+result_sum = 0
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 232, 16, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
         if 0 == A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(232 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(232 + item, A2RawReadByte[item], 'OK'))
+            result_sum += 1
         else:
             print('A2[{}]=0x{:0>2X},{}'.format(232 + item, A2RawReadByte[item], 'Fail'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(232 + item, A2RawReadByte[item], 'Fail'))
+if result_sum == 16:
+    f_report.write("\nA2 232-247 OK")
+else:
+    f_report.write("\nA2 232-247 FAIL")
 
-print("\nCheck open area : A2 185-231")
-f.write("\nCheck open area : A2 185-231\n")
+print("\nCheck open area : A2 185-231...")
+f.write("\nCheck open area : A2 185-231...\n")
+f_report.write("\nCheck open area : A2 185-231...\n")
 A2RawDataBuff = ctypes.c_ubyte*47
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
+result_sum = 0
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 185, 47, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
         if 0 != A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(185 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(185 + item, A2RawReadByte[item], 'OK'))
+            result_sum += 1
         else:
             print('A2[{}]=0x{:0>2X},{}'.format(185 + item, A2RawReadByte[item], 'Fail'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(185 + item, A2RawReadByte[item], 'Fail'))
-
+if result_sum == 47:
+    f_report.write("\nA2 185-231 OK")
+else:
+    f_report.write("\nA2 185-231 FAIL")
 #########################################################
 #               Read by user read password
 #########################################################
 print("\nInput user read password")
 f.write("\nInput user read password\n")
+f_report.write("\nInput user read password\n")
 Sfp_User_Read_099Pwd_Entry()
 time.sleep(1)
 
-print("\nCheck open area : A2 185-231")
-f.write("\nCheck open area: A2 185-231\n")
+print("\nCheck open area : A2 185-231...")
+f.write("\nCheck open area: A2 185-231...\n")
+f_report.write("\nCheck open area: A2 185-231...\n")
 A2RawDataBuff = ctypes.c_ubyte*47
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
+result_sum = 0
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 185, 47, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
         if 0 != A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(185 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(185 + item, A2RawReadByte[item], 'OK'))
+            result_sum += 1
         else:
             print('A2[{}]=0x{:0>2X},{}'.format(185 + item, A2RawReadByte[item], 'Fail'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(185 + item, A2RawReadByte[item], 'Fail'))
+if result_sum == 47:
+    f_report.write("\nA2 185-231 OK\n")
 
-print("\nRead password area and A2 128-184")
-f.write("\nRead password area and A2 128-184\n")
+print("\nRead A2 128-184...")
+f.write("\nRead A2 128-184...\n")
+f_report.write("\nRead A2 128-184...\n")
 A2RawDataBuff = ctypes.c_ubyte*57
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
@@ -192,9 +226,11 @@ if 0 == Res:
     for item in range(len(A2RawReadByte)):
        print('A2[{}]=0x{:0>2X}'.format(128 + item, A2RawReadByte[item]))
        f.write('A2[{}]=0x{:0>2X}\n'.format(128 + item, A2RawReadByte[item]))
+       f_report.write('A2[{}]=0x{:0>2X}\n'.format(128 + item, A2RawReadByte[item]))
 
-print("\nRead Encryption  area : A2 232-247")
-f.write("\nRead Encryption  area: A2 232-247\n")
+print("\nRead Encryption  area : A2 232-247...")
+f.write("\nRead Encryption  area: A2 232-247...\n")
+f_report.write("\nRead Encryption  area: A2 232-247...\n")
 A2RawDataBuff = ctypes.c_ubyte*16
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
@@ -204,32 +240,41 @@ if 0 == Res:
         if 0 == A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X}'.format(232 + item, A2RawReadByte[item]))
             f.write('A2[{}]=0x{:0>2X}\n'.format(232 + item, A2RawReadByte[item]))
+            f_report.write('A2[{}]=0x{:0>2X}\n'.format(232 + item, A2RawReadByte[item]))
 
 #########################################################
 #               Read by user write password
 #########################################################
 print("\nInput user write password")
 f.write("\nInput user write password\n")
+f_report.write("\nInput user write password\n")
 Sfp_User_Write_099Pwd_Entry()
 time.sleep(1)
 
-print("\nCheck open area: A2 185-231")
-f.write("\nCheck open area: A2 185-231\n")
+print("\nCheck open area: A2 185-231...")
+f.write("\nCheck open area: A2 185-231...\n")
+f_report.write("\nCheck open area: A2 185-231...\n")
 A2RawDataBuff = ctypes.c_ubyte*47
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
+result_sum = 0
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 185, 47, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
         if 0 != A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(185 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(185 + item, A2RawReadByte[item], 'OK'))
+            result_sum += 1
         else:
             print('A2[{}]=0x{:0>2X},{}'.format(185 + item, A2RawReadByte[item], 'Fail'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(185 + item, A2RawReadByte[item], 'Fail'))
-
-print("\nRead password area and Encryption  area A2 128-184")
-f.write("\nRead password area and Encryption  area A2 128-184\n")
+if result_sum == 47:
+    f_report.write("\nopen area: A2 185-231 OK")
+else:
+    f_report.write("\nopen area: A2 185-231 FAIL")
+print("\nRead password area and Encryption  area A2 128-184...")
+f.write("\nRead password area and Encryption  area A2 128-184...\n")
+f_report.write("\nRead password area and Encryption  area A2 128-184...\n")
 A2RawDataBuff = ctypes.c_ubyte*57
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
@@ -238,9 +283,11 @@ if 0 == Res:
     for item in range(len(A2RawReadByte)):
        print('A2[{}]=0x{:0>2X}'.format(128 + item, A2RawReadByte[item]))
        f.write('A2[{}]=0x{:0>2X}\n'.format(128 + item, A2RawReadByte[item]))
+       f_report.write('A2[{}]=0x{:0>2X}\n'.format(128 + item, A2RawReadByte[item]))
 
-print("\nRead Encryption  area: A2 232-247")
-f.write("\nRead Encryption  area: A2 232-247\n")
+print("\nRead Encryption  area: A2 232-247...")
+f.write("\nRead Encryption  area: A2 232-247...\n")
+f_report.write("\nRead Encryption  area: A2 232-247...\n")
 A2RawDataBuff = ctypes.c_ubyte*16
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
@@ -250,6 +297,7 @@ if 0 == Res:
         if 0 == A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X}'.format(232 + item, A2RawReadByte[item]))
             f.write('A2[{}]=0x{:0>2X}\n'.format(232 + item, A2RawReadByte[item]))
+            f_report.write('A2[{}]=0x{:0>2X}\n'.format(232 + item, A2RawReadByte[item]))
 
 del A2RawReadByte, A2RawDataBuff
 
@@ -258,6 +306,7 @@ del A2RawReadByte, A2RawDataBuff
 #########################################################
 print("\nA2 140-143 wirte new data ")
 f.write("\nA2 140-143 wirte new data \n")
+f_report.write("\nA2 140-143 wirte new data \n")
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(140,141,142,143)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 140, 4, A2WriteByte)
@@ -273,9 +322,11 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 print("\nWrite user writing password... ")
 f.write("\nWrite user writing password... \n")
+f_report.write("\nWrite user writing password... \n")
 Sfp_User_Write_099Pwd_Entry()
 
 Res = 0xFF
+result_sum = 0
 A2ReadDataBuff = ctypes.c_ubyte*4
 A2ReadByte = A2ReadDataBuff()
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 140, 4, A2ReadByte)
@@ -286,14 +337,21 @@ if 0 == Res:
             f.write('write A2[{}]=0x{:0>2X},{}\n'.format(140+item, A2WriteByte[item], 'OK'))
             print('read A2[{}]=0x{:0>2X},{}'.format(140+item, A2ReadByte[item], 'OK'))
             f.write('read A2[{}]=0x{:0>2X},{}\n'.format(140+item, A2ReadByte[item], 'OK'))
+            result_sum += 1
+if result_sum == 4:
+    f_report.write("\nWrite A2 140-143 OK")
+else:
+    f_report.write("\nWrite A2 140-143 FAIL")
 #restore A2 140-143
 print("\nA2 140-143 restore to default data ")
 f.write("\nA2 140-143 restore default data \n")
+f_report.write("\nA2 140-143 restore default data \n")
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(0,0,0,0)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 140, 4, A2WriteByte)
 time.sleep(1)
 Res = 0xFF
+result_sum = 0
 A2ReadDataBuff = ctypes.c_ubyte*4
 A2ReadByte = A2ReadDataBuff()
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 140, 4, A2ReadByte)
@@ -302,9 +360,15 @@ if 0 == Res:
         if A2WriteByte[item] == A2ReadByte[item]:
             print('read A2[{}]=0x{:0>2X},{}'.format(140+item, A2ReadByte[item], 'OK'))
             f.write('read A2[{}]=0x{:0>2X},{}\n'.format(140+item, A2ReadByte[item], 'OK'))
+            result_sum += 1
+if result_sum == 4:
+    f_report.write("\nA2 140-143 restore OK")
+else:
+    f_report.write("\nA2 140-143 restore FAIL")
 
-print("\nA2 244-247 wirte new data ")
-f.write("\nA2 244-247 wirte new data \n")
+print("\nA2 244-247 wirte new data...")
+f.write("\nA2 244-247 wirte new data...\n")
+f_report.write("\nA2 244-247 wirte new data...\n")
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(244,245,246,247)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 244, 4, A2WriteByte)
@@ -320,9 +384,11 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 print("\nWrite user writing password... ")
 f.write("\nWrite user writing password... \n")
+f_report.write("\nWrite user writing password... \n")
 Sfp_User_Write_099Pwd_Entry()
 
 Res = 0xFF
+result_sum = 0
 A2ReadDataBuff = ctypes.c_ubyte*4
 A2Readbyte = A2ReadDataBuff()
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 244, 4, A2ReadByte)
@@ -333,14 +399,22 @@ if 0 == Res:
             f.write('write A2[{}]=0x{:0>2X},{}\n'.format(item, A2WriteByte[item], 'OK'))
             print('read A2[{}]=0x{:0>2X},{}'.format(item, A2ReadByte[item], 'OK'))
             f.write('read A2[{}]=0x{:0>2X},{}\n'.format(item, A2ReadByte[item], 'OK'))
+            result_sum += 1
+if result_sum == 4:
+    f_report.write("\nA2 244-247 wirte OK")
+else:
+    f_report.write("\nA2 244-247 wirte FAIL")
 
 print("\nA2 244-247 restore to default data ")
 f.write("\nA2 244-247 restore to default data \n")
+f_report.write("\nA2 244-247 restore to default data \n")
+
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(0,0,0,0)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 244, 4, A2WriteByte)
 time.sleep(1)
 Res = 0xFF
+result_sum = 0
 A2ReadDataBuff = ctypes.c_ubyte*4
 A2ReadByte = A2ReadDataBuff()
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 244, 4, A2ReadByte)
@@ -349,6 +423,11 @@ if 0 == Res:
         if A2WriteByte[item] == A2ReadByte[item]:
             print('read A2[{}]=0x{:0>2X},{}'.format(item, A2ReadByte[item], 'OK'))
             f.write('read A2[{}]=0x{:0>2X},{}\n'.format(item, A2ReadByte[item], 'OK'))
+            result_sum += 1
+if result_sum == 4:
+    f_report.write("\nA2 244-247 restore OK")
+else:
+    f_report.write("\nA2 244-247 restore FAIL")
 
 del A2WriteDataBuff, A2WriteByte, A2ReadDataBuff, A2ReadByte
 #########################################################
@@ -364,15 +443,18 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 print("\nWrite user writing password... ")
 f.write("\nWrite user writing password... \n")
+f_report.write("\nWrite user writing password... \n")
 Sfp_User_Write_099Pwd_Entry()
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(1, 2, 3, 4)
-print("\nWrite the first time new user writing password... ")
-f.write("\nWrite the first time new user writing password... \n")
+print("\nWrite the user's new password for the first time... ")
+f.write("\nWrite the user's new password for the first time... \n")
+f_report.write("\nWrite the user's new password for the first time... \n")
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 132, 4, A2WriteByte)
 time.sleep(1)
-print("\nWrite the second time new user writing password... ")
-f.write("\nWrite the second time new user writing password... \n")
+print("\nWrite the user's new password for the second time... ")
+f.write("\nWrite the user's new password for the second time... \n")
+f_report.write("\nWrite the user's new password for the second time... \n")
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 132, 4, A2WriteByte)
 print("\nPown Off ")
 f.write("\nPown Off \n")
@@ -384,6 +466,8 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 print("\nWrite user new reading password, check... ")
 f.write("\nWrite user new reading password, check... \n")
+f_report.write("\nWrite user new reading password, check... \n")
+
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(1, 2, 3, 4)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 4, A2WriteByte)
@@ -391,22 +475,24 @@ Res = 0xFF
 A2ReadDataBuff = ctypes.c_ubyte*8
 A2ReadByte = A2ReadDataBuff()
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 8, A2ReadByte)
-count = 0
+result_sum = 0
 if 0 == Res:
     for item in range(4):
         if A2ReadByte[item] == A2ReadByte[item+4]:
             print('A2[{}]=0x{:0>2X},A2[{}]=0x{:0>2X},{}'.format(128+item, A2ReadByte[item], 132+item, A2ReadByte[item+4], 'OK'))
             f.write('A2[{}]=0x{:0>2X},A2[{}]=0x{:0>2X},{}\n'.format(128+item, A2ReadByte[item], 132+item, A2ReadByte[item+4], 'OK'))
-            count += 1
+            result_sum += 1
         else:
             break
 
-if 4 == count:
-    print("\nNew reading password change success! ")
-    f.write("\nNew reading password change success! \n")
+if 4 == result_sum:
+    print("\nNew reading password change OK! ")
+    f.write("\nNew reading password change OK! \n")
+    f_report.write("\nNew reading password change OK! \n")
 else:
-    print("\nNew reading password change fail! ")
-    f.write("\nNew reading password change fail! \n")
+    print("\nNew reading password change FAIL! ")
+    f.write("\nNew reading password change FAIL! \n")
+    f_report("\nNew reading password change FAIL! \n")
 #########################################################
 #           Change to user new write password
 #########################################################
@@ -420,15 +506,19 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 print("\nWrite user writing password... ")
 f.write("\nWrite user writing password... \n")
+f_report.write("\nWrite user writing password... \n")
+
 Sfp_User_Write_099Pwd_Entry()
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(5, 6, 7, 8)
-print("\nWrite the first time new user writing password... ")
-f.write("\nWrite the first time new user writing password... \n")
+print("\nWrite the user's new password for the first time... ")
+f.write("\nWrite the user's new password for the first time... \n")
+f_report.write("\nWrite the user's new password for the first time... \n")
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 136, 4, A2WriteByte)
 time.sleep(1)
-print("\nWrite the second time new user writing password... ")
-f.write("\nWrite the second time new user writing password... \n")
+print("\nWrite the user's new password for the second time... ")
+f.write("\nWrite the user's new password for the second time... \n")
+f_report.write("\nWrite the user's new password for the second time... \n")
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 136, 4, A2WriteByte)
 print("\nPown Off ")
 f.write("\nPown Off \n")
@@ -440,6 +530,7 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 print("\nWrite user new writing password, check... ")
 f.write("\nWrite user new writing password, check... \n")
+f_report.write("\nWrite user new writing password, check... \n")
 A2WriteDataBuff = ctypes.c_ubyte*4
 A2WriteByte = A2WriteDataBuff(5, 6, 7, 8)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 4, A2WriteByte)
@@ -448,25 +539,27 @@ Res = 0xFF
 A2ReadDataExtBuff = ctypes.c_ubyte*4
 A2ReadExtByte = A2ReadDataExtBuff()
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 136, 4, A2ReadExtByte)
-count = 0
+result_sum = 0
 if 0 == Res:
     for item in range(4):
         if A2WriteByte[item] == A2ReadExtByte[item]:
             print('A2[{}]=0x{:0>2X},A2[{}]=0x{:0>2X},{}'.format(128+item, A2WriteByte[item], 136+item, A2ReadExtByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},A2[{}]=0x{:0>2X},{}\n'.format(128+item, A2WriteByte[item], 136+item, A2ReadExtByte[item], 'OK'))
-            count += 1
-if 4 == count:
-    print("\nNew writing password change success! ")
-    f.write("\nNew writing password change success! \n")
+            result_sum += 1
+if 4 == result_sum:
+    print("\nNew writing password change OK! ")
+    f.write("\nNew writing password change OK! \n")
+    f_report.write("\nNew writing password change OK! \n")
 else:
-    print("\nNew writing password change fail! ")
-    f.write("\nNew writing password change fail! \n")
+    print("\nNew writing password change FAIL! ")
+    f.write("\nNew writing password change FAIL! \n")
+    f_report.write("\nNew writing password change FAIL! \n")
 #########################################################
 #           Restore to user default password
 #########################################################
 print("\nRestore user default password... ")
 f.write("\nRestore user default password... \n")
-
+f_report.write("\nRestore user default password... \n")
 userDefaultPassword = {132:0x0B, 133:0x0C, 134:0x0D, 135:0x0E, 136:0x0A, 137:0x0B, 138:0x0C, 139:0x0D}
 passwordArray = list(userDefaultPassword.values())
 addrArray = list(userDefaultPassword.keys())
@@ -495,18 +588,22 @@ Sfp_User_Read_099Pwd_Entry()
 A2ReadDataBuff = ctypes.c_ubyte*8
 A2ReadByte = A2ReadDataBuff()
 Res = 0xFF
+
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 132, 8, A2ReadByte)
 if 0 == Res:
     for item in range(len(A2ReadByte)):
         if A2ReadByte[item] == passwordArray[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(132+item, A2ReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(132+item, A2ReadByte[item], 'OK'))
+
     if list(A2ReadByte) == passwordArray:
-        print("\nRestore user default reading password success! ")
-        f.write("\nRestore user default reading password success! \n")
+        print("\nRestore user default reading password OK! ")
+        f.write("\nRestore user default reading password OK! \n")
+        f_report.write("\nRestore user default reading password Ok! \n")
     else:
-        print("\nRestore user default reading password fail! ")
-        f.write("\nRestore user default reading password fail! \n")
+        print("\nRestore user default reading password FAIL! ")
+        f.write("\nRestore user default reading password FAIL! \n")
+        f_report.write("\nRestore user default reading password FAIL! \n")
 
 del userReadPassword
 dateTime = time.strptime(time.asctime())
@@ -517,7 +614,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\n099 user encryption rule test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
-
+f_report.write("\n****************************************************************************")
+f_report.write("\n099 user encryption rule test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

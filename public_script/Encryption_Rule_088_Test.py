@@ -97,7 +97,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("088 user encryption rule test, start time : {}".format(dateTime))
@@ -105,11 +107,15 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\n088 user encryption rule test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\n088 user encryption rule test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f_report.write('\n'+testTitle+'\n')
 
-print("重上电")
-f.write("重上电")
+print("POR...")
+f.write("POR...")
 #clear any password
 testEvb.AteAllPowerOff()
 time.sleep(1)
@@ -120,9 +126,9 @@ time.sleep(1)
 #先读用户EEPROM检查是否全为0，然后写用户指定写区域，
 #然后回读检查是否写入，最后恢复为全0。写入使用用户密码
 #########################################################
-print("\n不写密码检查用户EEPROM")
-f.write("\n不写密码检查用户EEPROM\n")
-
+print("\nNot write password to check user Encryption area")
+f.write("\n Not write password to check user Encryption  area\n")
+f_report.write("\n Not write password to check user Encryption  area\n")
 A2RawDataBuff = ctypes.c_ubyte*120
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
