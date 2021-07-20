@@ -43,18 +43,6 @@ def Sfp_User_088Pwd_Entry():
     user088Pwd = i2cWriteBuf(0x00, 0x00, 0x10, 0x11)
     testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 123, 4, byref(user088Pwd))
 
-def Restore_User_EEPROM():
-    A2_128_255_buf = create_string_buffer(128)
-    Res = 0xFF
-    Res = testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 128,
-                                           byref(A2_128_255_buf))
-    if 0 == Res:
-        print('A2[128-255] restore to 0, OK!')
-        f.write('\nA2[128-255] restore to 0, OK!\n')
-    else:
-        print('A2[128-255] restore to 0,  Fail!')
-        f.write('\nA2[128-255] restore to 0,  Fail!\n')
-
 #########################################################
 #               Open USB Device
 #########################################################
@@ -92,7 +80,6 @@ strFwVer = ''.join(strFwVer)
 #                 Open File
 #########################################################
 startTick = time.time()
-#dateTime = time.strptime(time.asctime())
 dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
@@ -123,26 +110,39 @@ testEvb.AteAllPowerOn()
 time.sleep(1)
 
 #########################################################
-#先读用户EEPROM检查是否全为0，然后写用户指定写区域，
-#然后回读检查是否写入，最后恢复为全0。写入使用用户密码
+#先读用户EEPROM(128-247),作为恢复数据，检查除BOM(144-159)外是否全为0
 #########################################################
 print("\nNot write password to check user Encryption area")
 f.write("\n Not write password to check user Encryption  area\n")
-f_report.write("\n Not write password to check user Encryption  area\n")
+print("\nCheck A2 128-247...")
+f.write("\nCheck A2 128-247...\n")
 A2RawDataBuff = ctypes.c_ubyte*120
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 128, 120, A2RawReadByte)
+result_sum = 0
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
-        if 0 == A2RawReadByte[item]:
+        if item < 144-128 or item > 159-128:
             print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'OK'))
+        elif 0 == A2RawReadByte[item]:
+            print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'OK'))
+            f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'OK'))
+            result_sum += 1
         else:
             print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'Fail'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'Fail'))
+if result_sum == 120-(159-144)+1:
+    f_report.write("\nA2 128-247 OK")
+
+#########################################################
+#写入使用用户密码,写用户指定写区域，
+#然后回读检查是否写入，最后恢复。
+#########################################################
 print("\n输入用户密码")
 f.write("\n输入用户密码\n")
+f_report.write("\n输入用户密码")
 Sfp_User_088Pwd_Entry()
 time.sleep(1)
 print("\nModel存储区写入")
@@ -198,68 +198,95 @@ f.write("重上电")
 
 print("\nModel存储区检查")
 f.write("\nModel存储区检查\n")
-A2RawDataBuff = create_string_buffer(4)
+
+A2_140_143_Read = create_string_buffer(4)
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 140, 4, byref(A2RawDataBuff))
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 140, 4, byref(A2_140_143_Read))
 if 0 == Res:
-    if list(A2_140_143_buf) == list(A2RawDataBuff):
+    if list(A2_140_143_buf) == list(A2_140_143_Read):
         print('Model存储区A2[140-143] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[140-143] Reading Data equal Writing data, OK!\n')
+        f_report.write('\nModel存储区A2[140-143] Reading Data equal Writing data, OK!\n')
     else:
-        for item in range(len(A2RawDataBuff)):
-            print(A2RawDataBuff[item])
+        for item in range(len(A2_140_143_Read)):
+            print(A2_140_143_Read[item])
         for item in range(len(A2_140_143_buf)):
             print(A2_140_143_buf[item])
         print('Model存储区A2[140-143] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[140-143] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('Model存储区A2[140-143] Reading Data not equal Writing data, Fail!\n')
 
-A2RawDataBuff = create_string_buffer(16)
+A2_226_242_Read = create_string_buffer(16)
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 226, 16, byref(A2RawDataBuff))
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 226, 16, byref(A2_226_242_Read))
 if 0 == Res:
-    if list(A2_226_241_buf) == list(A2RawDataBuff):
+    if list(A2_226_241_buf) == list(A2_226_242_Read):
         print('Model存储区A2[226-242] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[226-242] Reading Data equal Writing data, OK!\n')
+        f_report.write('Model存储区A2[226-242] Reading Data equal Writing data, OK!\n')
     else:
         print('Model存储区A2[226-242] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[226-242] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('Model存储区A2[226-242] Reading Data not equal Writing data, Fail!\n')
 
-A2RawDataBuff = ctypes.c_ubyte*2
-A2RawReadByte = A2RawDataBuff()
-Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 242, 2, A2RawReadByte)
+A2_242_243_ReadBuf = ctypes.c_ubyte*2
+A2_242_243_Read = A2_242_243_ReadBuf()
+# Res = 0xFF
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 242, 2, A2_242_243_Read)
 if 0 == Res:
-    if list(A2_242_243_byte) == list(A2RawReadByte):
+    if list(A2_242_243_byte) == list(A2_242_243_Read):
         print('Model存储区A2[242-243] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[242-243] Reading Data equal Writing data, OK!\n')
+        f_report.write('Model存储区A2[242-243] Reading Data equal Writing data, OK!\n')
     else:
         for item in range(len(A2_242_243_byte)):
             print(A2_242_243_byte[item])
-        for item in range(len(A2RawReadByte)):
-            print(A2RawReadByte[item])
+        for item in range(len(A2_242_243_Read)):
+            print(A2_242_243_Read[item])
         print('Model存储区A2[242-243] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[242-243] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('Model存储区A2[242-243] Reading Data not equal Writing data, Fail!\n')
 
 print("\nItem存储区(BOM编码)检查")
 f.write("\nItem存储区(BOM编码)检查\n")
-A2RawDataBuff = ctypes.c_ubyte*16
-A2RawReadByte = A2RawDataBuff()
+A2_144_159_ReadBuf = ctypes.c_ubyte*16
+A2_144_159_Read = A2_144_159_ReadBuf()
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 144, 16, A2RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 144, 16, A2_144_159_Read)
 if 0 == Res:
-    if list(A2_144_159_byte) == list(A2RawReadByte):
+    if list(A2_144_159_byte) == list(A2_144_159_Read):
         print('Model存储区A2[144-159] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[144-159] Reading Data equal Writing data, OK!\n')
+        f_report.write('Model存储区A2[144-159] Reading Data equal Writing data, OK!\n')
     else:
         print('Model存储区A2[144-159] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[144-159] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('Model存储区A2[144-159] Reading Data not equal Writing data, Fail!\n')
 
-print("\nA2 Restore to All '0'")
-f.write("\nA2 Restore to All '0'\n")
+print("\nA2 Restore...")
+f.write("\nA2 Restore...\n")
 Sfp_User_088Pwd_Entry()
 time.sleep(1)
-A2_128_255_buf = create_string_buffer(128)
-Restore_User_EEPROM()
+
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120,
+                                           A2RawReadByte)
+time.sleep(2)
+testEvb.AteAllPowerOff()
+time.sleep(1)
+testEvb.AteAllPowerOn()
+time.sleep(1)
+Res = 0xFF
+A2_128_247_Read = create_string_buffer(120)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120,
+                                           byref(A2_128_247_Read))
+if 0 == Res and list(A2_128_247_Read) == list(A2_128_247_Read):
+    print('A2[128-247] restore to 0, OK!')
+    f.write('\nA2[128-247] restore to 0, OK!\n')
+    f_report.write('A2[128-247] restore OK!\n')
+else:
+    print('A2[128-247] restore to 0,  Fail!')
+    f.write('\nA2[128-247] restore to 0,  Fail!\n')
+    f_report.write('A2[128-247] restore Fail!\n')
 time.sleep(1)
 
 #########################################################
@@ -282,7 +309,10 @@ Res = 0xFF
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 128, 120, A2RawReadByte)
 if 0 == Res:
     for item in range(len(A2RawReadByte)):
-        if 0 == A2RawReadByte[item]:
+        if item < 144 or item > 159:
+            print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'OK'))
+            f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'OK'))
+        elif 0 == A2RawReadByte[item]:
             print('A2[{}]=0x{:0>2X},{}'.format(128 + item, A2RawReadByte[item], 'OK'))
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'OK'))
         else:
@@ -290,6 +320,7 @@ if 0 == Res:
             f.write('A2[{}]=0x{:0>2X},{}\n'.format(128 + item, A2RawReadByte[item], 'Fail'))
 print("\n输入工厂密码")
 f.write("\n输入工厂密码\n")
+f_report.write("\n输入工厂密码")
 Sfp_Factory_Pwd_Entry(0)
 time.sleep(1)
 print("\nModel存储区写入")
@@ -345,71 +376,98 @@ f.write("重上电")
 time.sleep(1)
 print("\nModel存储区检查")
 f.write("\nModel存储区检查\n")
-A2RawDataBuff = ctypes.create_string_buffer(4)
+A2_140_143_Read = ctypes.create_string_buffer(4)
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 140, 4, byref(A2RawDataBuff))
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 140, 4, byref(A2_140_143_Read))
 if 0 == Res:
-    if list(A2_140_143_buf) == list(A2RawDataBuff):
+    if list(A2_140_143_buf) == list(A2_140_143_Read):
         print('Model存储区A2[140-143] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[140-143] Reading Data equal Writing data, OK!\n')
+        f_report.write('\nModel存储区A2[140-143] Reading Data equal Writing data, OK!\n')
     else:
-        for item in range(len(A2RawDataBuff)):
+        for item in range(len(A2_140_143_Read)):
             print(A2RawDataBuff[item])
         for item in range(len(A2_140_143_buf)):
             print(A2_140_143_buf[item])
         print('Model存储区A2[140-143] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[140-143] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('\nModel存储区A2[140-143] Reading Data not equal Writing data, Fail!\n')
 
-A2RawDataBuff = create_string_buffer(16)
+A2_226_242_Read = create_string_buffer(16)
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 226, 16, byref(A2RawDataBuff))
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 226, 16, byref(A2_226_242_Read))
 if 0 == Res:
-    if list(A2_226_241_buf) == list(A2RawDataBuff):
+    if list(A2_226_241_buf) == list(A2_226_242_Read):
         print('Model存储区A2[226-242] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[226-242] Reading Data equal Writing data, OK!\n')
+        f_report.write('Model存储区A2[226-242] Reading Data equal Writing data, OK!\n')
     else:
         print('Model存储区A2[226-242] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[226-242] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('Model存储区A2[226-242] Reading Data not equal Writing data, Fail!\n')
 
-A2RawDataBuff = ctypes.c_ubyte*2
-A2RawReadByte = A2RawDataBuff()
+A2_242_243_ReadBuf = ctypes.c_ubyte*2
+A2_242_243_Read = A2_242_243_ReadBuf()
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 242, 2, A2RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 242, 2, A2_242_243_Read)
 if 0 == Res:
-    if list(A2_242_243_byte) == list(A2RawReadByte):
+    if list(A2_242_243_byte) == list(A2_242_243_Read):
         print('Model存储区A2[242-243] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[242-243] Reading Data equal Writing data, OK!\n')
+        f_report.write('Model存储区A2[242-243] Reading Data equal Writing data, OK!\n')
     else:
         for item in range(len(A2_242_243_byte)):
             print(A2_242_243_byte[item])
-        for item in range(len(A2RawReadByte)):
-            print(A2RawReadByte[item])
+        for item in range(len(A2_242_243_Read)):
+            print(A2_242_243_Read[item])
         print('Model存储区A2[242-243] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[242-243] Reading Data not equal Writing data, Fail!\n')
+        f_report('Model存储区A2[242-243] Reading Data not equal Writing data, Fail!\n')
 
 print("\nItem存储区(BOM编码)检查")
 f.write("\nItem存储区(BOM编码)检查\n")
-A2RawDataBuff = ctypes.c_ubyte*16
-A2RawReadByte = A2RawDataBuff()
+A2_144_159_ReadBuf = ctypes.c_ubyte*16
+A2_144_159_Read = A2_144_159_ReadBuf()
 Res = 0xFF
-Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 144, 16, A2RawReadByte)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 144, 16, A2_144_159_Read)
 if 0 == Res:
-    if list(A2_144_159_byte) == list(A2RawReadByte):
+    if list(A2_144_159_byte) == list(A2_144_159_Read):
         print('Model存储区A2[144-159] Reading Data equal Writing data, OK!')
         f.write('Model存储区A2[144-159] Reading Data equal Writing data, OK!\n')
+        f_report.write('Model存储区A2[144-159] Reading Data equal Writing data, OK!\n')
     else:
         print('Model存储区A2[144-159] Reading Data not equal Writing data, Fail!')
         f.write('Model存储区A2[144-159] Reading Data not equal Writing data, Fail!\n')
+        f_report.write('Model存储区A2[144-159] Reading Data not equal Writing data, Fail!\n')
 
-print("\nA2 Restore to All '0'")
-f.write("\nA2 Restore to All '0'\n")
-Sfp_Factory_Pwd_Entry(0)
+print("\nA2 Restore...")
+f.write("\nA2 Restore...\n")
+Sfp_User_088Pwd_Entry()
 time.sleep(1)
-Restore_User_EEPROM()
+
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120,
+                                           A2RawReadByte)
+time.sleep(2)
+testEvb.AteAllPowerOff()
+time.sleep(1)
+testEvb.AteAllPowerOn()
+time.sleep(1)
+Res = 0xFF
+A2_128_247_Read = create_string_buffer(120)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120,
+                                           byref(A2_128_247_Read))
+if 0 == Res and list(A2_128_247_Read) == list(A2_128_247_Read):
+    print('A2[128-247] restore to 0, OK!')
+    f.write('\nA2[128-247] restore to 0, OK!\n')
+    f_report.write('A2[128-247] restore OK!\n')
+else:
+    print('A2[128-247] restore to 0,  Fail!')
+    f.write('\nA2[128-247] restore to 0,  Fail!\n')
+    f_report.write('A2[128-247] restore Fail!\n')
 time.sleep(1)
 
 #########################################################
-#       Change to user new read password
+#       Change to user new password
 #########################################################
 print("\nPown Off ")
 f.write("\nPown Off \n")
@@ -455,6 +513,7 @@ testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 
 if list(A2ReadDataBuff) == list(A2_128_132_buf):
     print("\nNew user password change success! ")
     f.write("\nNew user password change success! \n")
+    f_report.write("\nNew user password change success! \n")
 else:
     for i in range(len(A2ReadDataBuff)):
         print(A2ReadDataBuff[i])
@@ -462,7 +521,7 @@ else:
         print(A2_128_132_buf[i])
     print("\nNew user password change fail! ")
     f.write("\nNew user password change fail! \n")
-
+    f_report.write("\nNew user password change fail! \n")
 #########################################################
 #           Restore to user default password
 #########################################################
@@ -493,6 +552,7 @@ testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[1], 
 if list(A2ReadDataBuff) == list(A2_128_132_buf):
     print("\nRestore user default password success! ")
     f.write("\nRestore user default password success! \n")
+    f_report.write("Restore user default password success! \n")
 else:
     for i in range(len(A2ReadDataBuff)):
         print(A2ReadDataBuff[i])
@@ -500,12 +560,32 @@ else:
         print(A2_128_132_buf[i])
     print("\nRestore user default password fail! ")
     f.write("\nRestore user default password fail! \n")
+    f_report.write("\nRestore user default password fail! \n")
 
-print("\nA2 Restore to All '0'")
-f.write("\nA2 Restore to All '0'\n")
-Sfp_Factory_Pwd_Entry(0)
+print("\nA2 Restore...")
+f.write("\nA2 Restore...\n")
+Sfp_User_088Pwd_Entry()
 time.sleep(1)
-Restore_User_EEPROM()
+
+testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120,
+                                           A2RawReadByte)
+time.sleep(2)
+testEvb.AteAllPowerOff()
+time.sleep(1)
+testEvb.AteAllPowerOn()
+time.sleep(1)
+Res = 0xFF
+A2_128_247_Read = create_string_buffer(120)
+Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 128, 120,
+                                           byref(A2_128_247_Read))
+if 0 == Res and list(A2_128_247_Read) == list(A2_128_247_Read):
+    print('A2[128-247] restore to 0, OK!')
+    f.write('\nA2[128-247] restore to 0, OK!\n')
+    f_report.write('A2[128-247] restore OK!\n')
+else:
+    print('A2[128-247] restore to 0,  Fail!')
+    f.write('\nA2[128-247] restore to 0,  Fail!\n')
+    f_report.write('A2[128-247] restore Fail!\n')
 time.sleep(1)
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
