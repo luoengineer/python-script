@@ -15,7 +15,7 @@ from classTestEvb import *
 #==============================================================================
 # Test times
 #==============================================================================
-wr_and_rd_times  = 5
+wr_and_rd_times  = 500
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -104,9 +104,8 @@ f_report.write('\n'+testTitle+'\n')
 
 B2RawDataBuff = ctypes.c_ubyte*128
 B2RawReadByte = B2RawDataBuff()
-print("\nB2 Direct High raw data: \n")
 f.write("\nB2 Direct High raw data: \n")
-f_report.write("\nB2 Direct High raw data: \n")
+
 Res = 0xFF
 Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, ComboSfpI2cAddr[3], 128, 128, B2RawReadByte)
 if 0 == Res:

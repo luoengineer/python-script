@@ -119,11 +119,11 @@ time.sleep(1)
 #               Read by no any password(default)
 #########################################################
 print("\nNot write password to check user Encryption area")
-f.write("\n Not write password to check user Encryption  area\n")
-f_report.write("\n Not write password to check user Encryption  area\n")
+f.write("\nNot write password to check user Encryption  area")
+f_report.write("\nNot write password to check user Encryption  area")
 print("\nCheck A2 128-184...")
-f.write("\nCheck A2 128-184...\n")
-f_report.write("\nCheck A2 128-184...\n")
+f.write("\nCheck A2 128-184...")
+f_report.write("\nCheck A2 128-184...")
 A2RawDataBuff = ctypes.c_ubyte*57
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
@@ -144,8 +144,8 @@ else:
     f_report.write("\nA2 128-184 FAIL")
 
 print("\nCheck A2 232-247...")
-f.write("\nCheck A2 232-247...\n")
-f_report.write("\nCheck A2 232-247...\n")
+f.write("\nCheck A2 232-247...")
+f_report.write("\nCheck A2 232-247...")
 A2RawDataBuff = ctypes.c_ubyte*16
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF
@@ -166,8 +166,8 @@ else:
     f_report.write("\nA2 232-247 FAIL")
 
 print("\nCheck open area : A2 185-231...")
-f.write("\nCheck open area : A2 185-231...\n")
-f_report.write("\nCheck open area : A2 185-231...\n")
+f.write("\nCheck open area : A2 185-231...")
+f_report.write("\nCheck open area : A2 185-231...")
 A2RawDataBuff = ctypes.c_ubyte*47
 A2RawReadByte = A2RawDataBuff()
 Res = 0xFF

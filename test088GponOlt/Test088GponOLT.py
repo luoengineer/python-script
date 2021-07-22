@@ -91,16 +91,16 @@ f.close()
 #########################################################
 #True or False
 
-FW_Basic_Config_Check_TEST = True
+FW_Basic_Config_Check_TEST = False
 A0_WRITE_READ_STRESS_TEST = True
 A2_WRITE_READ_STRESS_TEST = True
 A0_HIGH_WRITE_READ_STRESS_TEST = True
 A2_HIGH_WRITE_READ_STRESS_TEST = True
 
-Driver_GN25L96_TEST = True #需要配置lut表，adjust，AER是否enable
+Driver_GN25L96_TEST = True
 Driver_UX3320_TEST = False
 Driver_GN25L99_TEST = False
-TxPower_08uW_AlarmWarning_TEST = True
+TxPower_08uW_AlarmWarning_TEST = False
 TxPower_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
 User_Encryption_Rule_TEST = True
@@ -117,16 +117,16 @@ if True == FW_Basic_Config_Check_TEST:
     os.system('.\TestFWBasicInfo.py')
 
 if True == A0_WRITE_READ_STRESS_TEST:
-    import A0_Direct_Write_Read_Repeated_099_Test
+    import A0_Direct_Write_Read_Repeated_088_Test
 
 if True == A0_HIGH_WRITE_READ_STRESS_TEST:
-    import A0_Direct_High_Write_Read_Repeated_099_Test
+    import A0_Direct_High_Write_Read_Repeated_088_Test
 
 if True == A2_WRITE_READ_STRESS_TEST:
-    import A2_Direct_Write_Read_Repeated_099_Test
+    import A2_Direct_Write_Read_Repeated_088_Test
 
 if True == A2_HIGH_WRITE_READ_STRESS_TEST:
-    import A2_Direct_High_Write_Read_Repeated_099_Test
+    import A2_Direct_High_Write_Read_Repeated_088_Test
 if True == Driver_GN25L96_TEST:
     os.system('.\Driver_GN25L96_Test.py')
 

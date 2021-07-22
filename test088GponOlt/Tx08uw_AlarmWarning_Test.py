@@ -1,10 +1,16 @@
 import ctypes
 from ctypes import *
 import time
-from cmdServ import *
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
+import random
+import operator
 import sys
+import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
 #Test times
 wr_and_rd_times  = 2
@@ -16,7 +22,7 @@ user_password_type = is_088_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -65,7 +71,6 @@ def txpower08uwFlagAssert(devUsbIndex, devSffChannel, SfpI2cAddr):
 #########################################################
 #               Open USB Device
 #########################################################
-#TODO: How to config several usb device
 testEvb.openUsbDevice()
 
 #########################################################
@@ -89,12 +94,7 @@ strCmdOut = strCmdOutBuff()
 strFwVer = []
 retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
 if 0 == retStauts:
-    for item in range(len(strCmdOut)):
-        if 0x00 != strCmdOut[item]:
-            #print("{}".format(chr(strCmdOut[item])), end='')
-            strFwVer.append(chr(strCmdOut[item]))
-    else:
-        print("{0:d}".format(retStauts))
+    strFwVer = [chr(strCmdOut[item]) for item in range(len(strCmdOut)) if 0 != strCmdOut[item]]
 else:
     print("Can't get firmware version, stop test ! ")
     sys.exit()
@@ -105,7 +105,6 @@ strFwVer = ''.join(strFwVer)
 #                 Open File
 #########################################################
 startTick = time.time()
-#dateTime = time.strptime(time.asctime())
 dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
