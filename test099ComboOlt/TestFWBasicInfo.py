@@ -35,7 +35,7 @@ module_adjust_chn_nums = 10+1
 module_dac_chn_nums = 3+1
 module_base_talbe_nums = 4+1
 module_drv_table_nums = 1+1
-module_lutable_nums = 10+1
+module_lutable_nums = 11+1
 
 #########################################################
 #               create object
