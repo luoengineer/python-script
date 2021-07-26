@@ -3,22 +3,29 @@ from ctypes import *
 import time
 import random
 import operator
-from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
-
+#==============================================================================
+# Test times
+#==============================================================================
+wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
+userCode = 351
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -136,7 +143,8 @@ def mcu_get_lut(lutable_index):
             print("{}".format(chr(strCmdOut[item])), end='')
             f.write(chr(strCmdOut[item]))
     else:
-        print("Get lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
+        print("\nGet lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
+        f.write("\nGet lut {} table fail, error code :{:d}".format(lutable_index, retStauts))
 
 def mcu_get_driver_table(drv_table_index):
     command_str = 'MCU_GET_TABLE(driver,' + str(drv_table_index) + ',0,128)'
@@ -155,6 +163,13 @@ def mcu_get_driver_table(drv_table_index):
         print("Get driver {} table fail, error code :{:d}".format(drv_table_index, retStauts))
         f.write("Get driver {} table fail, error code :{:d}".format(drv_table_index, retStauts))
 
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 #########################################################
 #              Open USB Device
 #########################################################
@@ -168,7 +183,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #########################################################
 #               Command Sevices
@@ -195,20 +210,26 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("GPON OLT Basic configuration test, start time : {}".format(dateTime))
+print("Firmware Basic configuration test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nGPON OLT Basic configuration test, start time : {}".format(dateTime))
+f.write("\nFirmware Basic configuration test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nFirmware Basic configuration, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
+f_report.write('\n'+testTitle+'\n')
 #########################################################
 #                 MCU Get ADC
 #########################################################
+'''
 print("\n")
 f.write('\n\n')
 for item in range(module_adc_chn_nums):
@@ -230,9 +251,9 @@ print("\n")
 f.write('\n\n')
 for item in range(module_dac_chn_nums):
     mcu_get_dac(item)
-
+'''
 #########################################################
-#               Lut  check
+#               Data Table Check
 #########################################################
 print("\n")
 f.write('\n\n')
@@ -246,17 +267,95 @@ for item in range(module_drv_table_nums):
 
 print("\n")
 f.write('\n\n')
-for item in range(module_lutable_nums):
-    mcu_get_lut(item)
+#lut_data = ctypes.c_ubyte*128
+#lut_data_p = lut_data()
+lut_tmp_data = []
+lut_raw_data = []
+#get raw lut data
+print("\nRead lut raw data ...")
+f.write("\nRead lut raw data ...")
+f_report.write("\nRead lut raw data ...")
+for lut_index in range(module_lutable_nums):
+    lut_raw_data.append([])
+    ret, lut_tmp_data = cmd_read_table('lut', lut_index, 0, 128)
+    if 'OK' == ret:
+        print('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
+        f.write('\nMCU_GET_TABLE lut {:d} :'.format(lut_index))
+        f_report.write('\nMCU_GET_TABLE lut {:d} : OK'.format(lut_index))
+        #print("data size : {}".format(len(lut_tmp_data)))
+        for item in range(len(lut_tmp_data)):
+            print("0x{:02X}".format(lut_tmp_data[item]), end=',')
+            f.write("0x{:02X},".format(lut_tmp_data[item]))
+            lut_raw_data[lut_index].append(lut_tmp_data[item])
+    else:
+        print("\nread lut {} table fail".format(lut_index))
+        f.write("\nread lut {} table fail".format(lut_index))
+        f_report.write("\nread lut {} table fail".format(lut_index))
+
+#write test data to lut
+print("\n test writing lut ...")
+f.write("\n\ntest writing lut ...")
+lut_test_data = [1,2,3,4,5,6,7,8,9,10]
+for lut_index in range(module_lutable_nums):
+    if 'OK' == cmd_write_table('lut', lut_index, 0, lut_test_data):
+        print("lut {} wirting data ok!".format(lut_index))
+        f.write("\nlut {} wirting data ok!".format(lut_index))
+        f_report.write("\nlut {} wirting data ok!".format(lut_index))
+    else:
+        print("lut {} writing data fail!".format(lut_index))
+        f.write("\nlut {} writing data fail!".format(lut_index))
+        f_report.write("\nlut {} writing data fail!".format(lut_index))
+
+testEvb.AteAllPowerOff()
+time.sleep(1)
+testEvb.AteAllPowerOn()
+time.sleep(1)
+Sfp_Factory_Pwd_Entry(user_password_type)
+time.sleep(1)
+#readback check if not writed
+lut_readback_data = []
+for lut_index in range(module_lutable_nums):
+    ret, lut_readback_data = cmd_read_table('lut', lut_index, 0, 10)
+    #print(lut_readback_data)
+    if 'OK' == ret and lut_readback_data == lut_test_data:
+        print("lut {} test wrting ok!".format(lut_index))
+        f.write("\nlut {} test wirting ok!".format(lut_index))
+        f_report.write("\nlut {} test wirting ok!".format(lut_index))
+    else:
+        print("lut {} test wrting fail!".format(lut_index))
+        f.write("\nlut {} test wirting fail!".format(lut_index))
+        f_report.write("\nlut {} test wirting fail!".format(lut_index))
+
+
+#restore lut raw data
+print("\nRestore lut raw data ...")
+f.write("\n\nRestore lut raw data ...")
+f_report.write("\n\nRestore lut raw data ...")
+for lut_index in range(len(lut_raw_data)):
+#for lut_index in lut_raw_data:
+    #lut_tmp_data = lut_raw_data[lut_index].copy()
+    for lut_value in range(len(lut_raw_data[lut_index])):
+        lut_tmp_data[lut_value] = lut_raw_data[lut_index][lut_value]
+    if 'OK' == cmd_write_table('lut', lut_index, 0, lut_tmp_data):
+        print("lut {} wirting ok!".format(lut_index))
+        f.write("\nlut {} wirting ok!".format(lut_index))
+        f_report.write("\nlut {} wirting ok!".format(lut_index))
+    else:
+        print("lut {} writing fail!".format(lut_index))
+        f.write("\nlut {} writing fail!".format(lut_index))
+        f_report.write("\nlut {} writing fail!".format(lut_index))
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("GPON OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("Firmware Basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nGPON OLT basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\nFirmware Basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
-#testEvb.AteAllPowerOff()
+f_report.write("\n****************************************************************************")
+f_report.write("\nFirmware Basic configuration test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
+testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()
