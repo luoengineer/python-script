@@ -1,23 +1,31 @@
 import ctypes
 from ctypes import *
 import time
-import sys
+import random
 import operator
-from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry
-from classTestEvb import *
-import  random
+import sys
+import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+
+#==============================================================================
 #Test times
-wr_and_rd_times  = 5
+#==============================================================================
+#wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_088_Module
 
+
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -34,7 +42,7 @@ testEvb = cTestEvb(devUsbIndex)
 #########################################################
 def Sfp_User_Pwd_Entry():
     i2cWriteBuf = c_ubyte * 4
-    userPwd = i2cWriteBuf(0x00, 000, 0x10, 0x11)
+    userPwd = i2cWriteBuf(0x00, 0x00, 0x10, 0x11)
     testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 123, 4, byref(userPwd))
     del i2cWriteBuf, userPwd
 

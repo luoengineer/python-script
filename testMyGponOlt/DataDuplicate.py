@@ -21,6 +21,7 @@ is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
+userCode = 351
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
@@ -60,6 +61,13 @@ def i2c_read_sff_table(dev_usb_index, dev_sff_channel, i2c_addr, reg_offset, reg
         f.write(str(hex(i2cRead[item])) + ',')
     f.write('\n')
 
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 #########################################################
 #              Open USB Device
 #########################################################
@@ -73,7 +81,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #########################################################
 #               Command Sevices

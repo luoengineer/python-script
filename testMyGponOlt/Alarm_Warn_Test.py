@@ -3,12 +3,14 @@ from ctypes import *
 import time
 import random
 import operator
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
-import math
 import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 #Test times
 #wr_and_rd_times  = 5
 run_time_second = 30 * 1  # unit : s
@@ -120,8 +122,6 @@ def txpowerToSff8472(txpower, tx_unit):
     txpower_lsb = int(txpower) & 0xFF
     return txpower_msb, txpower_lsb
 
-
-
 def read_ddmi_case_temperature():
     A2RawDataBuff = ctypes.c_ubyte * 2
     A2RawReadByte = A2RawDataBuff()
@@ -156,7 +156,6 @@ def read_ddmi_voltage():
         f.write("\nRead DDMI supply voltage fail. ")
         return 'fail'
 
-
 def read_ddmi_txbias():
     A2RawDataBuff = ctypes.c_ubyte * 2
     A2RawReadByte = A2RawDataBuff()
@@ -173,7 +172,6 @@ def read_ddmi_txbias():
         print("Read DDMI TX bias fail. ")
         f.write("\nRead DDMI TX bias fail. ")
         return 'fail'
-
 
 def read_ddmi_txpower():
     A2RawDataBuff = ctypes.c_ubyte * 2
@@ -529,6 +527,14 @@ def get_txpower_warning_Flag(warning_flag):
     else:
         print("Read txpower Warning flag fail")
         f.write("Read txpower Warning flag fail")
+        
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 #########################################################
 #               Open USB Device
 #########################################################
@@ -542,7 +548,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #########################################################
 #               Command Sevices
@@ -569,7 +575,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("SFF-8472 DDMI Alarm and Warning test, start time : {}".format(dateTime))
@@ -577,9 +585,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nSFF-8472 DDMI Alarm and Warning test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nSFF-8472 DDMI Alarm and Warning test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("Firmware Version : {}".format(testTitle))
 f.write('\nFirmware Version : '+testTitle)
-
+f_report.write('\nFirmware Version : '+testTitle)
 strCmdIn = create_string_buffer(b'MCU_GET_TABLE(base,3,4,16)')
 strCmdOutBuff = ctypes.c_ubyte * 64
 strCmdOut = strCmdOutBuff()
@@ -614,6 +625,7 @@ if 0 == Res:
 else:
     f.write('read A2 0-96 raw data fail.'+'\n')
     print('read A2 0-96 raw data fail.' + '\n')
+    f_report.write('read A2 0-96 raw data fail.' + '\n')
     f.close()
     sys.exit()
 
@@ -623,10 +635,12 @@ else:
 #read current case temperature
 print("\nRead Temperature...")
 f.write("\nRead Temperature...")
+f_report.write("\nRead Temperature...")
 status, case_temperature = read_ddmi_case_temperature()
 if status == 'fail':
     print("\nDon't get DDMI case temperature")
     f.write("\nDon't get DDMI case temperature")
+    f_report.write("\nDon't get DDMI case temperature")
     sys.exit()
 #print("\ntest 1 = {}".format(sff8472ToTemperature(128, 1)))
 #print("\ntest 2 = {}".format(sff8472ToTemperature(127, 255)))
@@ -686,10 +700,11 @@ HighAlarmFlag = get_temp_alarm_Flag('TEMP HIGH ALARM')
 if True == HighAlarmFlag:
     print("Case temperature high alarm, test temp high alarm flag ok ！")
     f.write("\nCase temperature high alarm, test temp high alarm flag ok ！")
+    f_report.write("\nCase temperature high alarm, test temp high alarm flag ok ！")
 else:
     print("Case temperature not high alarm, test temp high alarm flag fail ！")
     f.write("\nCase temperature not high alarm, test temp high alarm flag fail ！")
-
+    f_report.write("\nCase temperature not high alarm, test temp high alarm flag fail ！")
 print("\nSet case temperature low alarm threshold ...")
 f.write("\nSet case temperature low alarm threshold ...")
 # low alarm threshold = case_temperature + 10
@@ -699,10 +714,11 @@ LowAlarmFlag = get_temp_alarm_Flag('TEMP LOW ALARM')
 if True == LowAlarmFlag:
     print("Case temperature low alarm, test temp low alarm flag ok ！")
     f.write("\nCase temperature low alarm, test temp low alarm flag ok ！")
+    f_report.write("\nCase temperature low alarm, test temp low alarm flag ok ！")
 else:
     print("Case temperature not low alarm, test temp low alarm flag fail ！")
     f.write("\nCase temperature not low alarm, test temp low alarm flag fail ！")
-
+    f_report.write("\nCase temperature not low alarm, test temp low alarm flag fail ！")
 print("\nSet case temperature high warning threshold ...")
 f.write("\nSet case temperature high warning threshold ...")
 #high warning threshold = case_temperature + 10
@@ -712,9 +728,11 @@ HighWarningFlag = get_temp_warning_Flag('TEMP HIGH WARNING')
 if True == HighWarningFlag:
     print("Case temperature high warning, test temp warning alarm flag ok ！")
     f.write("\nCase temperature high warning, test temp high warning flag ok ！")
+    f_report.write("\nCase temperature high warning, test temp high warning flag ok ！")
 else:
     print("Case temperature not high warning, test temp high warning flag fail ！")
     f.write("\nCase temperature not high warning, test temp high warning flag fail ！")
+    f_report.write("\nCase temperature not high warning, test temp high warning flag fail ！")
 
 print("\nSet case temperature low warning threshold ...")
 f.write("\nSet case temperature low warning threshold ...")
@@ -725,10 +743,11 @@ LowWarningFlag = get_temp_warning_Flag('TEMP LOW WARNING')
 if True == LowWarningFlag:
     print("Case temperature low warning, test temp low warning flag ok ！")
     f.write("\nCase temperature low warning, test temp low warning flag ok ！")
+    f_report("\nCase temperature low warning, test temp low warning flag ok ！")
 else:
     print("Case temperature not low warning, test temp low warning flag fail ！")
     f.write("\nCase temperature not low warning, test temp low warning flag fail ！")
-
+    f_report("\nCase temperature not low warning, test temp low warning flag fail ！")
 #########################################################
 #    test step 3 :  voltage alarm and warning
 #########################################################
@@ -796,9 +815,11 @@ HighAlarmFlag = get_volt_alarm_Flag('VOLT HIGH ALARM')
 if True == HighAlarmFlag:
     print("Voltage high alarm, test voltage high alarm flag ok ！")
     f.write("\nVoltage high alarm, test voltage high alarm flag ok ！")
+    f_report.write("\nVoltage high alarm, test voltage high alarm flag ok ！")
 else:
     print("Voltage not high alarm, test voltage high alarm flag fail ！")
     f.write("\nVoltage not high alarm, test voltage high alarm flag fail ！")
+    f_report.write("\nVoltage not high alarm, test voltage high alarm flag fail ！")
 
 print("\nSet voltage low alarm threshold ...")
 f.write("\nSet voltage low alarm threshold ...")
@@ -809,10 +830,11 @@ LowAlarmFlag = get_volt_alarm_Flag('VOLT LOW ALARM')
 if True == LowAlarmFlag:
     print("Voltage low alarm, test volt low alarm flag ok ！")
     f.write("\nVoltage low alarm, test volt low alarm flag ok ！")
+    f_report.write("\nVoltage low alarm, test volt low alarm flag ok ！")
 else:
     print("Voltage not low alarm, test volt low alarm flag fail ！")
     f.write("\nVoltage not low alarm, test volt low alarm flag fail ！")
-
+    f_report.write("\nVoltage not low alarm, test volt low alarm flag fail ！")
 print("\nSet Voltage high warning threshold ...")
 f.write("\nSet Voltage high warning threshold ...")
 #high warning threshold = Voltage + 10
@@ -822,10 +844,11 @@ HighWarningFlag = get_volt_warning_Flag('VOLT HIGH WARNING')
 if True == HighWarningFlag:
     print("Voltage high warning, test volt warning alarm flag ok ！")
     f.write("\nVoltage high warning, test volt high warning flag ok ！")
+    f_report.write("\nVoltage high warning, test volt high warning flag ok ！")
 else:
     print("Voltage not high warning, test volt high warning flag fail ！")
     f.write("\nVoltage not high warning, test volt high warning flag fail ！")
-
+    f_report.write("\nVoltage not high warning, test volt high warning flag fail ！")
 print("\nSet voltage low warning threshold ...")
 f.write("\nSet voltage low warning threshold ...")
 # low alarm threshold = voltage - 10
@@ -835,10 +858,11 @@ LowWarningFlag = get_volt_warning_Flag('VOLT LOW WARNING')
 if True == LowWarningFlag:
     print("Voltage low warning, test volt low warning flag ok ！")
     f.write("\nVoltage low warning, test volt low warning flag ok ！")
+    f_report.write("\nVoltage low warning, test volt low warning flag ok ！")
 else:
     print("Voltage not low warning, test volt low warning flag fail ！")
     f.write("\nVoltage not low warning, test volt low warning flag fail ！")
-
+    f_report.write("\nVoltage not low warning, test volt low warning flag fail ！")
 ########################################################
 #    test step 4 :  txbias alarm and warning
 #########################################################
@@ -904,10 +928,11 @@ HighAlarmFlag = get_txbias_alarm_Flag('TXBIAS HIGH ALARM')
 if True == HighAlarmFlag:
     print("Txbias high alarm, test txbias high alarm flag ok ！")
     f.write("\nTxbias high alarm, test txbias high alarm flag ok ！")
+    f_report.write("\nTxbias high alarm, test txbias high alarm flag ok ！")
 else:
     print("Txbias not high alarm, test txbias high alarm flag fail ！")
     f.write("\nTxbias not high alarm, test txbias high alarm flag fail ！")
-
+    f_report.write("\nTxbias not high alarm, test txbias high alarm flag fail ！")
 print("\nSet txbias low alarm threshold ...")
 f.write("\nSet txbias low alarm threshold ...")
 # low alarm threshold = txbias + 5
@@ -917,10 +942,11 @@ LowAlarmFlag = get_txbias_alarm_Flag('TXBIAS LOW ALARM')
 if True == LowAlarmFlag:
     print("Txbias low alarm, test txbias low alarm flag ok ！")
     f.write("\nTxbias low alarm, test txbias low alarm flag ok ！")
+    f_report("\nTxbias low alarm, test txbias low alarm flag ok ！")
 else:
     print("Txbias not low alarm, test txbias low alarm flag fail ！")
     f.write("\nTxbias not low alarm, test txbias low alarm flag fail ！")
-
+    f_report.write("\nTxbias not low alarm, test txbias low alarm flag fail ！")
 print("\nSet Txbias high warning threshold ...")
 f.write("\nSet Txbias high warning threshold ...")
 #high warning threshold = txbias + 10
@@ -930,10 +956,11 @@ HighWarningFlag = get_txbias_warning_Flag('TXBIAS HIGH WARNING')
 if True == HighWarningFlag:
     print("Txbias high warning, test txbias warning alarm flag ok ！")
     f.write("\nTxbias high warning, test txbias high warning flag ok ！")
+    f_report.write("\nTxbias high warning, test txbias high warning flag ok ！")
 else:
     print("Txbias not high warning, test txbias high warning flag fail ！")
     f.write("\nTxbias not high warning, test txbias high warning flag fail ！")
-
+    f_report.write("\nTxbias not high warning, test txbias high warning flag fail ！")
 print("\nSet txbias low warning threshold ...")
 f.write("\nSet txbias low warning threshold ...")
 # low alarm threshold = txbias - 10
@@ -943,10 +970,11 @@ LowWarningFlag = get_txbias_warning_Flag('TXBIAS LOW WARNING')
 if True == LowWarningFlag:
     print("Txbias low warning, test txbias low warning flag ok ！")
     f.write("\nTxbias low warning, test txbias low warning flag ok ！")
+    f_report.write("\nTxbias low warning, test txbias low warning flag ok ！")
 else:
     print("Txbias not low warning, test txbias low warning flag fail ！")
     f.write("\nTxbias not low warning, test txbias low warning flag fail ！")
-
+    f_report.write("\nTxbias not low warning, test txbias low warning flag fail ！")
 
 #########################################################
 #    test step 5 :  txpower alarm and warning
@@ -1013,10 +1041,11 @@ HighAlarmFlag = get_txpower_alarm_Flag('TXPOWER HIGH ALARM')
 if True == HighAlarmFlag:
     print("Txpower high alarm, test txpower high alarm flag ok ！")
     f.write("\nTxpower high alarm, test txpower high alarm flag ok ！")
+    f_report.write("\nTxpower high alarm, test txpower high alarm flag ok ！")
 else:
     print("Txpower not high alarm, test txpower high alarm flag fail ！")
     f.write("\nTxpower not high alarm, test txpower high alarm flag fail ！")
-
+    f_report.write("\nTxpower not high alarm, test txpower high alarm flag fail ！")
 print("\nSet txpower low alarm threshold ...")
 f.write("\nSet txpower low alarm threshold ...")
 # low alarm threshold = txpower + 1
@@ -1026,10 +1055,11 @@ LowAlarmFlag = get_txpower_alarm_Flag('TXPOWER LOW ALARM')
 if True == LowAlarmFlag:
     print("Txpower low alarm, test txpower low alarm flag ok ！")
     f.write("\nTxpower low alarm, test txpower low alarm flag ok ！")
+    f_report.write("\nTxpower low alarm, test txpower low alarm flag ok ！")
 else:
     print("Txpower not low alarm, test txpower low alarm flag fail ！")
     f.write("\nTxpower not low alarm, test txpower low alarm flag fail ！")
-
+    f_report.write("\nTxpower not low alarm, test txpower low alarm flag fail ！")
 print("\nSet Txpower high warning threshold ...")
 f.write("\nSet Txpower high warning threshold ...")
 #high warning threshold = txpower - 1
@@ -1039,10 +1069,11 @@ HighWarningFlag = get_txpower_warning_Flag('TXPOWER HIGH WARNING')
 if True == HighWarningFlag:
     print("Txpower high warning, test txpower warning alarm flag ok ！")
     f.write("\nTxpower high warning, test txpower high warning flag ok ！")
+    f_report.write("\nTxpower high warning, test txpower high warning flag ok ！")
 else:
     print("Txpower not high warning, test txpower high warning flag fail ！")
     f.write("\nTxpower not high warning, test txpower high warning flag fail ！")
-
+    f_report.write("\nTxpower not high warning, test txpower high warning flag fail ！")
 print("\nSet txpower low warning threshold ...")
 f.write("\nSet txpower low warning threshold ...")
 # low alarm threshold = txpower - 1
@@ -1052,10 +1083,11 @@ LowWarningFlag = get_txpower_warning_Flag('TXPOWER LOW WARNING')
 if True == LowWarningFlag:
     print("Txpower low warning, test txpower low warning flag ok ！")
     f.write("\nTxpower low warning, test txpower low warning flag ok ！")
+    f_report.write("\nTxpower low warning, test txpower low warning flag ok ！")
 else:
     print("Txpower not low warning, test txpower low warning flag fail ！")
     f.write("\nTxpower not low warning, test txpower low warning flag fail ！")
-
+    f_report.write("\nTxpower not low warning, test txpower low warning flag fail ！")
 
 #########################################################
 #    test step 6 :  rxpower alarm and warning
@@ -1065,7 +1097,7 @@ else:
 #########################################################
 #    test step 7 :  Restore A2 0-95
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96, byref(A2RawReadByte))
 time.sleep(2)
@@ -1079,8 +1111,10 @@ testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0, 96
 if True == operator.eq(A2RawDataBuff, A2ReadDataBuff):
     f.write('\nA2 Direct restore success.' + '\n')
     print("A2 Direct restore success.")
+    f_report.write("A2 Direct restore success.")
 else:
     f.write('\nA2 Direct restore fail.' + '\n')
+    f_report.write('\nA2 Direct restore fail.' + '\n')
     print("A2 Direct restore fail.")
 
 dateTime = time.strptime(time.asctime())
@@ -1091,6 +1125,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nSFF-8472 DDMI Alarm and Warning test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nSFF-8472 DDMI Alarm and Warning test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

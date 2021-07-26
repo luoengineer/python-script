@@ -1,12 +1,13 @@
 import ctypes
 from ctypes import *
 import time
-import random
-import operator
+
 from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
 from classTestEvb import *
 import sys
 import os
+
+
 
 # user type for password
 is_088_Module = 0
@@ -76,6 +77,10 @@ f.write("\nGeneric GPON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+
+
+
+
 f.close()
 
 
@@ -84,20 +89,22 @@ f.close()
 #########################################################
 #True or False
 FW_Basic_Config_Check_TEST = True
-Driver_GN25L99_TEST = False
-Driver_GN25L96_TEST = False
-Driver_UX3320_TEST = True
-Password_READ_BACK_TEST = True
 A0_WRITE_READ_REPEATED_TEST = True
 A2_WRITE_READ_REPEATED_TEST = True
 A0_Direct_High_WRITE_READ_REPEATED_TEST = True
 A2_Direct_High_WRITE_READ_REPEATED_TEST = True
-TxPower08uW_Alarm_Warning_TEST = False
+A2_Page02_WRITE_READ_REPEATED_TEST = True
+Driver_GN25L99_TEST = False
+Driver_GN25L96_TEST = False
+Driver_UX3320_TEST = False
 Tx_Soft_Dis_En_STRESS_TEST = False
-Inner_I2C_STRESS_TEST = True
+Inner_I2C_STRESS_TEST = False
+Password_READ_BACK_TEST = True
+
+
+
 Module_Init_Check_TEST = True
-A0_WRITE_READ_STRESS_USERPASSWORD_TEST = False
-A2_WRITE_READ_STRESS_USERPASSWORD_TEST = False
+
 
 
 if True == FW_Basic_Config_Check_TEST:
@@ -137,8 +144,7 @@ if True == A0_Direct_High_WRITE_READ_REPEATED_TEST:
 if True == A2_Direct_High_WRITE_READ_REPEATED_TEST:
     os.system('.\A2_Direct_High_Write_Read_Repeated_Test.py')
 
-if True == TxPower08uW_Alarm_Warning_TEST:
-    os.system('.\Tx08uw_AlarmWarning_Test.py')
+
 
 # A0 write and read repeated
 if True == A0_WRITE_READ_REPEATED_TEST:

@@ -3,21 +3,29 @@ from ctypes import *
 import time
 import random
 import operator
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
+import os
 
-#Test times
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+
+#==============================================================================
+# Test times
+#==============================================================================
 wr_and_rd_times  = 5
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
+userCode = 351
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -34,10 +42,8 @@ testEvb = cTestEvb(devUsbIndex)
 def random_int_list(start, stop, length):
   start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
   length = int(abs(length)) if length else 0
-  random_list = []
   for i in range(length):
-   random_list.append(random.randint(start, stop))
-  return random_list
+    yield random.randint(start, stop)
 
 def selectPage(pageNum):
     A2DataBuff = [pageNum] * 1
@@ -45,6 +51,14 @@ def selectPage(pageNum):
     f.write("\nSelect A2 Page 02h")
     print("\nSelect to A2 Page 02h")
     testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 127, 1, A2WriteByte)
+
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 
 
 #########################################################
@@ -60,7 +74,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #########################################################
 #               Command Sevices
@@ -87,7 +101,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("A2 Page 02h Write and Read stress test, start time : {}".format(dateTime))
@@ -95,9 +111,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nA2 Page 02h Write and Read stress test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nA0 Direct Write and Read stress test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
+f_report.write('\n'+testTitle+'\n')
 selectPage(2)
 
 A2RawDataBuff = ctypes.c_ubyte*128
@@ -124,7 +143,7 @@ totalSuccess = 0
 for times in range(wr_and_rd_times):
     testEvb.AteAllPowerOn()
     time.sleep(2)
-    Sfp_Factory_Pwd_Entry(user_password_type)
+    Sfp_User_Pwd_Entry(userCode)
     time.sleep(1)
 
     selectPage(2)
@@ -158,7 +177,6 @@ for times in range(wr_and_rd_times):
     print('read...')
     for item in range(128):
         f.write(str(hex(randomReadByte[item]))+',')
-        #print("{}".format(str(hex(randomReadByte[item]))), end=',')
     f.write('\n')
 
     wr_and_rd_success = 0
@@ -182,15 +200,18 @@ for times in range(wr_and_rd_times):
 if wr_and_rd_times == totalSuccess:
     print('A2 Page 02h write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A2 Page 02h write and read data {} times PASS !'.format(wr_and_rd_times))
+    f_report.write('A2 Page 02h write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
     print('A2 Page 02h write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A2 Page 02h write and read data {} times FAIL !'.format(wr_and_rd_times))
+    f_report.write('A2 Page 02h write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
+f_report.write('\n')
 
 #restore A2 Page 2
 testEvb.AteAllPowerOn()
 time.sleep(2)
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 
 selectPage(2)
@@ -204,8 +225,8 @@ if True == operator.eq(A2RawDataBuff, A2ReadDataBuff):
     f.write('\nA2 Page 02h restore success.' + '\n')
     print("A2 Page 02h restore success.")
 else:
-    f.write('\nA2 Direct restore fail.' + '\n')
-    print("A2 Direct restore fail.")
+    f.write('\nA2 Page 02h restore fail.' + '\n')
+    print("A2 Page 02h restore fail.")
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
@@ -215,6 +236,9 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nA2 Page 02h Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nA0 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
+f_report.close()

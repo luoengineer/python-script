@@ -39,9 +39,9 @@ SFF_B0_DIRECT_HIGH = False
 SFF_B2_DIRECT = False
 SFF_B2_DIRECT_HIGH = False
 
-module_base_talbe_nums = 4+1
+module_base_talbe_nums = 3+1
 module_drv_table_nums = 0+1
-module_lutable_nums = 7+1
+module_lutable_nums = 3+1
 
 #########################################################
 #               create object
