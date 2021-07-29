@@ -15,7 +15,7 @@ from classTestEvb import *
 #==============================================================================
 # Test times
 #==============================================================================
-wr_and_rd_times  = 5
+wr_and_rd_times  = 1000
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -104,7 +104,7 @@ f.write("\n*********************************************************************
 f.write("\nA2 Direct Write and Read stress test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 f_report.write("\n****************************************************************************")
-f_report.write("\nA0 Direct Write and Read stress test, start time : {}".format(dateTime))
+f_report.write("\nA2 Direct Write and Read stress test, start time : {}".format(dateTime))
 f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -139,8 +139,9 @@ for times in range(wr_and_rd_times):
    
     A2WriteDataBuff = [0x00] * 96
     A2WriteDataBuff = random_int_list(0, 256, 96)
-    A2WriteDataBuff[92] = 0
+    #A2WriteDataBuff[92] = 0
     A2WriteByte = (c_ubyte * 96)(*A2WriteDataBuff)
+    A2WriteByte[92] = 0
 
     f.write('write :\n')
     for item in range(96):
@@ -185,10 +186,13 @@ for times in range(wr_and_rd_times):
 if wr_and_rd_times == totalSuccess:
     print('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
+    f_report.write('A2 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
     print('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A2 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
+    f_report.write('A2Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
+f_report.write('\n')
 
 #restore A2 Direct
 testEvb.AteAllPowerOn()
@@ -216,7 +220,7 @@ f.write("\n*********************************************************************
 f.write("\nA2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 f_report.write("\n****************************************************************************")
-f_report.write("\nA0 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\nA2 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()

@@ -113,7 +113,7 @@ def mcu_get_dac(dac_chn):
         f.write(str(retStauts))
 
 def mcu_get_base_table(base_table_index):
-    command_str = 'MCU_GET_TABLE(base,' + str(base_table_index) + ',0,128)'
+    command_str = 'MCU_GET_TABLE(base,'+str(base_table_index)+',0,128)'
     command_str = bytes(command_str, encoding="utf8")
     strCmdIn = create_string_buffer(command_str)
     strCmdOutBuff = ctypes.c_ubyte * 1024
@@ -173,6 +173,7 @@ def Sfp_User_Pwd_Entry(userCode):
 #########################################################
 #              Open USB Device
 #########################################################
+
 testEvb.openUsbDevice()
 
 #########################################################
@@ -180,6 +181,7 @@ testEvb.openUsbDevice()
 #########################################################
 testEvb.AteAllPowerOn()
 time.sleep(2)
+
 #########################################################
 #               Entry Password
 #########################################################
@@ -310,7 +312,7 @@ testEvb.AteAllPowerOff()
 time.sleep(1)
 testEvb.AteAllPowerOn()
 time.sleep(1)
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #readback check if not writed
 lut_readback_data = []
@@ -344,7 +346,6 @@ for lut_index in range(len(lut_raw_data)):
         print("lut {} writing fail!".format(lut_index))
         f.write("\nlut {} writing fail!".format(lut_index))
         f_report.write("\nlut {} writing fail!".format(lut_index))
-
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")

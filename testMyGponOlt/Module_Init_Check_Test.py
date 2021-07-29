@@ -1,13 +1,9 @@
 import ctypes
 from ctypes import *
 import time
-import random
-import operator
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
-import math
-import os
+from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry
+from classTestEvb import *
 
 #Test times
 #wr_and_rd_times  = 5

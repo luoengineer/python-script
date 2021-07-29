@@ -34,8 +34,10 @@ def I2C_Write(nDev, nReg, nLen, pbyDat):
         # print("{}".format((i)%256s), end=' ')
         # print("{}".format(pbyDat[i]), end=' ')
         pbyVal[i % 256] = pbyDat[i]
-        # print("{}".format(pbyVal[i]))
+        #print("0x{:2X}".format(pbyVal[i]))
     byRes = testEvb.objdll.AteIicRandomWrite(devusbindex, devSffChannel, nDev, nReg, nLen, byref(pbyVal))
+    #if byRes != 0:
+    #    print("0x{:2X}".format(byRes))
     return byRes
 
 

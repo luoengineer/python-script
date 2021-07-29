@@ -1,27 +1,39 @@
 import ctypes
 from ctypes import *
 import time
-
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+
+pub_path = os.path.dirname(os.path.dirname(__file__))
+pub_path = os.path.join(pub_path, 'public_script')
+sys.path.append(pub_path)
 
 
-# user type for password
-is_088_Module = 0
-is_other_Module = 1
-user_password_type = is_other_Module
-
+userCode = 351
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
 devSfpChannel = 2
+#########################################################
+#               Inner Funtion
+#########################################################
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 
 #########################################################
 #               create object
@@ -40,7 +52,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #########################################################
 #               Command Sevices
@@ -77,10 +89,6 @@ f.write("\nGeneric GPON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
-
-
-
 f.close()
 
 
@@ -100,11 +108,7 @@ Driver_UX3320_TEST = False
 Tx_Soft_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
 Password_READ_BACK_TEST = True
-
-
-
-Module_Init_Check_TEST = True
-
+Module_Init_Check_TEST = False
 
 
 if True == FW_Basic_Config_Check_TEST:
@@ -131,21 +135,6 @@ if True == Inner_I2C_STRESS_TEST:
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')
 
-if True == A0_WRITE_READ_STRESS_USERPASSWORD_TEST:
-    os.system('.\A0_Direct_Write_Read_Repeated_ByUserpassword_Test.py')
-
-if True == A2_WRITE_READ_STRESS_USERPASSWORD_TEST:
-    os.system('.\A2_Direct_Write_Read_Repeated_ByUserpassword_Test.py')
-
-
-if True == A0_Direct_High_WRITE_READ_REPEATED_TEST:
-    os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
-
-if True == A2_Direct_High_WRITE_READ_REPEATED_TEST:
-    os.system('.\A2_Direct_High_Write_Read_Repeated_Test.py')
-
-
-
 # A0 write and read repeated
 if True == A0_WRITE_READ_REPEATED_TEST:
     os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
@@ -153,6 +142,16 @@ if True == A0_WRITE_READ_REPEATED_TEST:
 # A2 write and read repeated
 if True == A2_WRITE_READ_REPEATED_TEST:
     os.system('.\A2_Direct_Write_Read_Repeated_Test.py')
+
+if True == A0_Direct_High_WRITE_READ_REPEATED_TEST:
+    os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
+
+if True == A2_Direct_High_WRITE_READ_REPEATED_TEST:
+    os.system('.\A2_Direct_High_Write_Read_Repeated_Test.py')
+
+if True == A2_Page02_WRITE_READ_REPEATED_TEST:
+    os.system('.\A2_Page02_Direct_Write_Read_Repeated_Test.py')
+
 
 f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())

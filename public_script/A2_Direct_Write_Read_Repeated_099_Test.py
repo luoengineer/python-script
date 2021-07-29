@@ -166,11 +166,11 @@ for times in range(wr_and_rd_times):
 
     if wr_and_rd_success == 96:
         totalSuccess += 1
-        f.write('Round.{}: A2 write data equal read data, OK'.format(times)+'\n\n')
-        print("Round.{} A2 write data equal read data, OK".format(times))
+        f.write('Round.{}: A2 Direct write data equal read data, OK'.format(times)+'\n\n')
+        print("Round.{} A2 Direct write data equal read data, OK".format(times))
     else:
-        f.write('Round.{}: A2 write data not equal read data, FAIL'.format(times)+'\n\n')
-        print('Round.{}: A2 write data not equal read data, FAIL'.format(times)+'\n\n')
+        f.write('Round.{}: A2 Direct write data not equal read data, FAIL'.format(times)+'\n\n')
+        print('Round.{}: A2 Direct write data not equal read data, FAIL'.format(times)+'\n\n')
 
     testEvb.AteAllPowerOff()
     time.sleep(1)

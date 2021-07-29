@@ -17,11 +17,7 @@ from classTestEvb import *
 #==============================================================================
 #wr_and_rd_times  = 5
 # user type for password
-is_088_Module = 0
-is_other_Module = 1
-user_password_type = is_other_Module
-
-
+userCode = 351
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
@@ -62,7 +58,7 @@ def read_back_password():
     else:
         print("Read-back A2[123-126] fail ")
         #f.write("Read-back A2[123-126] fail ")
-	if result_sum == 4:
+    if result_sum == 4:
         return "OK"
     else:
         return "FAIL"	
