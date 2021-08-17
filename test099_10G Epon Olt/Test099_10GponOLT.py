@@ -111,9 +111,6 @@ Password_READ_BACK_TEST = True
 Module_Init_Check_TEST = False
 B2_Page0_Check_TEST = True
 
-path = os.path.dirname(os.path.dirname(__file__))
-path = os.path.join(path, 'public_script')
-sys.path.append(path)
 
 
 if True == FW_Basic_Config_Check_TEST:

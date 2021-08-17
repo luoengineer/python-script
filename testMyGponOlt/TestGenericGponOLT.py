@@ -98,8 +98,8 @@ f.close()
 #True or False
 FW_Basic_Config_Check_TEST = True
 A0_WRITE_READ_REPEATED_TEST = True
-A2_WRITE_READ_REPEATED_TEST = True
 A0_Direct_High_WRITE_READ_REPEATED_TEST = True
+A2_WRITE_READ_REPEATED_TEST = True
 A2_Direct_High_WRITE_READ_REPEATED_TEST = True
 A2_Page02_WRITE_READ_REPEATED_TEST = True
 Driver_GN25L99_TEST = False
@@ -139,19 +139,18 @@ if True == Module_Init_Check_TEST:
 if True == A0_WRITE_READ_REPEATED_TEST:
     os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
 
+if True == A0_Direct_High_WRITE_READ_REPEATED_TEST:
+    os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
+
 # A2 write and read repeated
 if True == A2_WRITE_READ_REPEATED_TEST:
     os.system('.\A2_Direct_Write_Read_Repeated_Test.py')
-
-if True == A0_Direct_High_WRITE_READ_REPEATED_TEST:
-    os.system('.\A0_Direct_High_Write_Read_Repeated_Test.py')
 
 if True == A2_Direct_High_WRITE_READ_REPEATED_TEST:
     os.system('.\A2_Direct_High_Write_Read_Repeated_Test.py')
 
 if True == A2_Page02_WRITE_READ_REPEATED_TEST:
     os.system('.\A2_Page02_Direct_Write_Read_Repeated_Test.py')
-
 
 f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())

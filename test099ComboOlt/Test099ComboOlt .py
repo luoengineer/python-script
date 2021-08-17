@@ -116,7 +116,7 @@ sys.path.append(path)
 
 
 if True == FW_Basic_Config_Check_TEST:
-    os.system('.\TestFWBasicInfo.py')
+    import TestFWBasicInfo_099
 
 if True == A0_WRITE_READ_STRESS_TEST:
     import A0_Direct_Write_Read_Repeated_099_Test
@@ -142,6 +142,9 @@ if True == B2_WRITE_READ_STRESS_TEST:
 if True == B2_HIGH_WRITE_READ_STRESS_TEST:
     import B2_Direct_High_Write_Read_Repeated_099_Test
 
+if True == B2_Page0_Check_TEST:
+    import B2_Page0_099_Test
+
 if True == Driver_GN25L96_TEST:
     os.system('.\Driver_GN25L96_Test.py')
 
@@ -166,8 +169,6 @@ if True == Password_READ_BACK_TEST:
 if True == Module_Init_Check_TEST:
     os.system('.\Module_Init_Check_Test.py')
 
-if True == B2_Page0_Check_TEST:
-    import B2_Page0_099_Test
 
 f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())

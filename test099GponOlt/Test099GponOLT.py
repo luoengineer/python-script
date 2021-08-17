@@ -1,13 +1,18 @@
 import ctypes
 from ctypes import *
 import time
-
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
+pub_path = os.path.dirname(os.path.dirname(__file__))
+pub_path = os.path.join(pub_path, 'public_script')
+sys.path.append(pub_path)
 
 # user type for password
 is_088_Module = 0
@@ -17,7 +22,7 @@ user_password_type = is_other_Module
 # Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -79,12 +84,7 @@ f.write("\n099 GEPON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
-
-
-
-
 f.close()
-
 
 #########################################################
 #               Test Configuration

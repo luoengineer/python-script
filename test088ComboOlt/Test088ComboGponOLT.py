@@ -2,11 +2,16 @@ import ctypes
 from ctypes import *
 import time
 import sys
-from sys import path
-path.append('./python_lib')
-from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
+pub_path = os.path.dirname(os.path.dirname(__file__))
+pub_path = os.path.join(pub_path, 'public_script')
+sys.path.append(pub_path)
 #########################################################
 #               Test Configuration
 #########################################################
@@ -95,10 +100,10 @@ fileName = strFwVer+'.txt'
 f = open(fileName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
-print("COMBO PON OLT test, start time : {}".format(dateTime))
+print("088 COMBO PON OLT test, start time : {}".format(dateTime))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nCOMBO PON OLT test, start time : {}".format(dateTime))
+f.write("\n088 COMBO PON OLT test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -109,20 +114,30 @@ if True == Driver_GN25L96_TEST:
 
 #A0 write and read repeated
 if True == A0_WRITE_READ_STRESS_TEST:
-    os.system('.\A0_Direct_Write_Read_Repeated_Test.py')
+    import A0_Direct_Write_Read_Repeated_088_Test
 
-#A2 write and read repeated
+if True == A0_HIGH_WRITE_READ_STRESS_TEST:
+    import A0_Direct_High_Write_Read_Repeated_088_Test
 if True == A2_WRITE_READ_STRESS_TEST:
-    os.system('.\A2_Direct_Write_Read_Repeated_Test.py')
+    import A2_Direct_Write_Read_Repeated_088_Test
+if True == A2_HIGH_WRITE_READ_STRESS_TEST:
+    import A2_Direct_High_Write_Read_Repeated_088_Test
 
 #B0 write and read repeated
 if True == B0_WRITE_READ_STRESS_TEST:
-    os.system('.\B0_Direct_Write_Read_Repeated_Test.py')
+    import B0_Direct_High_Write_Read_Repeated_088_Test
+if True == B0_HIGH_WRITE_READ_STRESS_TEST:
+    import B0_HIGH_Direct_High_Write_Read_Repeated_088_Test
 
 #B2 write and read repeated
 if True == B2_WRITE_READ_STRESS_TEST:
-    os.system('.\B2_Direct_Write_Read_Repeated_Test.py')
+    import B2_Direct_High_Write_Read_Repeated_088_Test
+if True == B2_HIGH_WRITE_READ_STRESS_TEST:
+    import B2_HIGH_Direct_High_Write_Read_Repeated_088_Test
 
+#B2 write and read repeated
+if True == B2_WRITE_READ_STRESS_TEST:
+    import B2_Direct_High_Write_Read_Repeated_088_Test
 if True == TxPower_Dis_En_STRESS_TEST:
     os.system('.\Tx_Soft_Dis_En_Repeated_Test.py')
 
@@ -139,10 +154,10 @@ f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("COMBO PON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("088 COMBO PON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nCOMBO PON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\n088 COMBO PON OLT test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()

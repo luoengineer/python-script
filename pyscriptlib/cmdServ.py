@@ -66,6 +66,13 @@ def Sfp_Factory_Pwd_Entry(_userType):
         factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
     testEvb.objdll.AteIicRandomWrite(devusbindex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 
+def Xfp_Factory_Pwd_Entry(_userType):
+    i2cWriteBuf = c_ubyte * 4
+    if 0 == _userType:
+        factoryPwd = i2cWriteBuf(0xD8, 0x47, 0x54, 0x45)
+    elif 1 == _userType:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devusbindex, devSffChannel, 0xA0, 123, 4, byref(factoryPwd))
 
 def getAdc0():
     strCmdIn = create_string_buffer(b'MCU_GET_ADC(0)')

@@ -104,7 +104,7 @@ f.write("\n*********************************************************************
 f.write("\nA2 Direct High Write and Read stress test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
 f_report.write("\n****************************************************************************")
-f_report.write("\nA0 Direct Write and Read stress test, start time : {}".format(dateTime))
+f_report.write("\nA2 Direct High Write and Read stress test, start time : {}".format(dateTime))
 f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
@@ -184,9 +184,11 @@ for times in range(wr_and_rd_times):
 if wr_and_rd_times == totalSuccess:
     print('A2 Direct High write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A2 Direct High write and read data {} times PASS !'.format(wr_and_rd_times))
+    f_report.write('A2 Direct High write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
     print('A2 Direct High write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A2 Direct High write and read data {} times FAIL !'.format(wr_and_rd_times))
+    f_report.write('A2 Direct High write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
 f_report.write('\n')
 
@@ -216,7 +218,7 @@ f.write("\n*********************************************************************
 f.write("\nA2 Direct High Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 f_report.write("\n****************************************************************************")
-f_report.write("\nA0 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\nA2 Direct High Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()

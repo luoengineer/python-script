@@ -3,9 +3,14 @@ from ctypes import *
 import time
 import random
 import operator
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
+import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
 #==============================================================================
 # Test times
@@ -80,7 +85,9 @@ dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer
 fileName = strFwVer+'.txt'
+reportName = strFwVer+'.report'
 f = open(fileName, 'a+')
+f_report = open(reportName, 'a+')
 time.sleep(1)
 print("\n****************************************************************************")
 print("A0 Direct Write and Read stress test, start time : {}".format(dateTime))
@@ -88,8 +95,12 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nA0 Direct Write and Read stress test, start time : {}".format(dateTime))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nA0 Direct Write and Read stress test, start time : {}".format(dateTime))
+f_report.write("\n****************************************************************************")
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
+f_report.write('\n'+testTitle+'\n')
 
 A0RawDataBuff = ctypes.c_ubyte*80
 A0RawReadByte = A0RawDataBuff()
@@ -165,10 +176,13 @@ for times in range(wr_and_rd_times):
 if wr_and_rd_times == totalSuccess:
     print('A0 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
     f.write('A0 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
+    f_report.write('A0 Direct write and read data {} times PASS !'.format(wr_and_rd_times))
 else:
     print('A0 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
     f.write('A0 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
+    f_report.write('A0 Direct write and read data {} times FAIL !'.format(wr_and_rd_times))
 f.write('\n')
+f_report.write('\n')
 
 #restore A0 Direct
 testEvb.AteAllPowerOn()
@@ -195,7 +209,10 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nA0 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
+f_report.write("\n****************************************************************************")
+f_report.write("\nA0 Direct Write and Read stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f_report.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 
 f.close()
-
+f_report.close()
