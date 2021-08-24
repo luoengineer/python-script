@@ -1,19 +1,13 @@
 import ctypes
 from ctypes import *
 import time
-import random
-import operator
 import sys
-import os
-
-path = os.path.dirname(os.path.dirname(__file__))
-path = os.path.join(path, 'pyscriptlib')
-sys.path.append(path)
-from cmdServ import *
+from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry
 from classTestEvb import *
+
 #Test times
 #wr_and_rd_times  = 5
-run_time_second = 3600 * 1  # unit : s
+run_time_second = 3600 * 2  # unit : s
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -22,7 +16,7 @@ user_password_type = is_other_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2cAddr = [0xA0,0xA4]
+XfpI2dAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -96,10 +90,9 @@ def read_ddmi_case_temperature():
     if 0 == Res:
         print("Read A2 96-97(case temperature) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
         f.write("\nRead A2 96-97(case temperature) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
-        caseTemp = A2RawReadByte[0] + A2RawReadByte[1] / 256.0
+        caseTemp = A2RawReadByte[0] + A2RawReadByte[1] / 256
         print("Module DDMI case temperature : {} °C".format(caseTemp))
         f.write("\nModule DDMI case temperature : {} °C".format(caseTemp))
-        return 'ok'
     else:
         print("Read DDMI case temperature fail. ")
         f.write("\nRead DDMI case temperature fail. ")
@@ -113,16 +106,16 @@ def read_ddmi_voltage():
     if 0 == Res:
         print("Read A2 98-99(supply voltage) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
         f.write("\nRead A2 98-99(supply voltage) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
-        voltage = (A2RawReadByte[0] * 256 + A2RawReadByte[1]) * 0.0001
-        print("Module DDMI voltage : {} V".format(voltage))
-        f.write("\nModule DDMI voltage : {} V".format(voltage))
-        if (voltage <= 2.0): # or ((0 == A2RawReadByte[0]) and (0 == A2RawReadByte[1])):
-            return 'Exceptional DDMI voltage'
+        voltage = (A2RawReadByte[0] * 256 + A2RawReadByte[1]) / 10000
+        print("Module DDMI supply voltage : {} V".format(voltage))
+        f.write("\nModule DDMI supply voltage : {} V".format(voltage))
+        if (voltage <= 0) or ((0 == A2RawReadByte[0]) and (0 == A2RawReadByte[1])):
+            return 'Less than 0'
         else:
             return 'OK'
     else:
-        print("Read DDMI voltage fail. ")
-        f.write("\nRead DDMI voltage fail. ")
+        print("Read DDMI supply voltage fail. ")
+        f.write("\nRead DDMI supply voltage fail. ")
         return 'fail'
 
 
@@ -136,7 +129,7 @@ def read_ddmi_Txbias():
         f.write("\nRead A2 A2 100-101(TxBias) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
         if (0x09 ==  A2RawReadByte[0]) and (0xC4 == A2RawReadByte[1]):
             return 'Default bias'
-        bias = (A2RawReadByte[0] * 256 + A2RawReadByte[1]) * 2.0 / 1000.0
+        bias = (A2RawReadByte[0] * 256 + A2RawReadByte[1]) * 2 / 1000
         print("Module DDMI TX bias : {} mA".format(bias))
         f.write("\nModule DDMI TX bias : {} mA".format(bias))
         #if 0 == bias:
@@ -157,7 +150,7 @@ def read_ddmi_TxPower():
     if 0 == Res:
         print("Read A2 102-103(TxPower) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
         f.write("\nRead A2 102-103(TxPower) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
-        bias = math.log10((A2RawReadByte[0] * 256 + A2RawReadByte[1]) / 10000.0) * 10.0
+        bias = math.log10((A2RawReadByte[0] * 256 + A2RawReadByte[1]) / 10000) * 10
         print("Module DDMI TX Power : {} dBm".format(bias))
         f.write("\nModule DDMI TX Power : {} dBm".format(bias))
     else:
@@ -286,9 +279,9 @@ while time.time() < endTick:
         error_times_statistics.append('Not read A2[96-97], i2c fail')
         round_error_times += 1
     ret = read_ddmi_voltage()
-    if 'Exceptional DDMI voltage' == ret:
+    if 'Less than 0' == ret:
         error_times_statistics.append(str(total_times_count))
-        error_times_statistics.append('Exceptional DDMI voltage')
+        error_times_statistics.append('DDMI Vcc less than 0')
         round_error_times += 1
     elif 'fail' == ret:
         error_times_statistics.append(str(total_times_count))
@@ -306,17 +299,16 @@ while time.time() < endTick:
         error_times_count += 1
     total_times_count += 1
 
-if error_times_count > 0:
-    print("\nException Statistics:")
-    f.write("\n\nException Statistics:")
-    for item in range(error_times_count):
-        print("Round {}：{}".format(error_times_statistics[item*2],error_times_statistics[item*2+1]))
-        f.write("\nRound {}：{}".format(error_times_statistics[item*2],error_times_statistics[item*2+1]))
-    print("\nTotal happen {} times exception ".format(error_times_count))
-    f.write("\n\nTotal happen {} times exception ".format(error_times_count))
+if len(error_times_statistics) > 0:
+    #print("\n{}".format(error_times_statistics))
+    for item in range(len(error_times_statistics)):
+        print("\nError happen in Round {} ".format(len(error_times_statistics)))
+        f.write("\n\nError happen in Round {} ".format(len(error_times_statistics)))
+    print("\nTotal happen {} times error ".format(error_times_count))
+    f.write("\n\nTotal happen {} times error ".format(error_times_count))
 else:
-    print("\nNo exception, total execute Round {} OK . ".format(total_times_count))
-    f.write("\n\nNo exception, total execute Round {} OK . ".format(total_times_count))
+    print("\nNo error, total execute Round {} OK . ".format(total_times_count))
+    f.write("\n\nNo error, total execute Round {} OK . ".format(total_times_count))
 
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)

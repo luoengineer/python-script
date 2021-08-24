@@ -84,6 +84,19 @@ def getAdc0():
         strCmdOut[2:4] = strCmdOut[4:6]
         strCmdOut[4:6] = tempCmdOut
     return strCmdOut
+    
+def getAdc(channel):
+    command_str = 'MCU_GET_ADC(' + str(channel) + ')'
+    command_str = bytes(command_str, encoding="utf8")
+    strCmdIn = create_string_buffer(command_str)
+    strCmdOutBuff = ctypes.c_ubyte * 32
+    strCmdOut = strCmdOutBuff()
+    retStauts = cmdservdll.SuperCmdSer(strCmdIn, strCmdOut)
+    if 0 == retStauts:
+        tempCmdOut = strCmdOut[2:4]
+        strCmdOut[2:4] = strCmdOut[4:6]
+        strCmdOut[4:6] = tempCmdOut
+    return strCmdOut
 
 def adc02TempIndex(_ascTouple):
     ascii_list = list(_ascTouple)

@@ -1,9 +1,9 @@
 import ctypes
 from ctypes import *
 import time
+import math
 import sys
 import os
-import math
 
 path = os.path.dirname(os.path.dirname(__file__))
 path = os.path.join(path, 'pyscriptlib')
