@@ -14,7 +14,7 @@ from cmdServ import *
 from classTestEvb import *
 #Test times
 #wr_and_rd_times  = 5
-run_time_second = 60 * 1  # unit : s
+run_time_second = 3600 * 3  # unit : s
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
@@ -117,7 +117,7 @@ def read_ddmi_voltage():
         voltage = (A2RawReadByte[0] * 256 + A2RawReadByte[1]) * 0.0001
         print("Module DDMI voltage : {} V".format(voltage))
         f.write("\nModule DDMI voltage : {} V".format(voltage))
-        if (voltage <= 2.0):
+        if (voltage <= 2.0) or (voltage > 3.4):
             strCmdOutBuff = ctypes.c_ubyte * 32
             strCmdOut = strCmdOutBuff()
             strCmdOut = getAdc(1)

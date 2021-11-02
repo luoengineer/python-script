@@ -5,13 +5,16 @@ import random
 import operator
 import sys
 import os
+import math
 
 path = os.path.dirname(os.path.dirname(__file__))
 path = os.path.join(path, 'pyscriptlib')
 sys.path.append(path)
 from cmdServ import *
 from classTestEvb import *
+#==============================================================================
 #Test times
+#==============================================================================
 #wr_and_rd_times  = 5
 run_time_second = 3600 * 1  # unit : s
 # user type for password
@@ -19,6 +22,7 @@ is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
+userCode = 351
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
@@ -116,7 +120,19 @@ def read_ddmi_voltage():
         voltage = (A2RawReadByte[0] * 256 + A2RawReadByte[1]) * 0.0001
         print("Module DDMI voltage : {} V".format(voltage))
         f.write("\nModule DDMI voltage : {} V".format(voltage))
-        if (voltage <= 2.0): # or ((0 == A2RawReadByte[0]) and (0 == A2RawReadByte[1])):
+        if (voltage <= 2.0):
+            strCmdOutBuff = ctypes.c_ubyte * 32
+            strCmdOut = strCmdOutBuff()
+            strCmdOut = getAdc(1)
+            if 0 != strCmdOut:
+                print("ADC 1(Hex):", end='')
+                f.write("\nADC 1(Hex):")
+                for item in range(len(strCmdOut)):
+                    print("{}".format(chr(strCmdOut[item])), end='')
+                    f.write(chr(strCmdOut[item]))
+            else:
+                print("Can't get ADC 1 ")
+                f.write("Can't get ADC 1 ")
             return 'Exceptional DDMI voltage'
         else:
             return 'OK'
@@ -132,7 +148,7 @@ def read_ddmi_Txbias():
     Res = 0xFF
     Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 100, 2, A2RawReadByte)
     if 0 == Res:
-        print("Read A2 100-101(TxBias) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
+        print("\nRead A2 100-101(TxBias) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
         f.write("\nRead A2 A2 100-101(TxBias) = 0x{:0>2X},0x{:0>2X} ".format(A2RawReadByte[0], A2RawReadByte[1]))
         if (0x09 ==  A2RawReadByte[0]) and (0xC4 == A2RawReadByte[1]):
             return 'Default bias'
@@ -169,7 +185,7 @@ def read_A2_Status():
     A2RawDataBuff = ctypes.c_ubyte * 1
     A2RawReadByte = A2RawDataBuff()
     print("Read A2 110: ")
-    f.write("\nRead A2 110: \n")
+    f.write("Read A2 110: \n")
     Res = 0xFF
     Res = testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 110, 1, A2RawReadByte)
     if 0 == Res:
@@ -193,7 +209,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 #########################################################
 #               Command Sevices
@@ -264,6 +280,8 @@ while time.time() < endTick:
     testEvb.AteAllPowerOn()
     time.sleep(2)
 
+    Sfp_Factory_Pwd_Entry(user_password_type)
+
     round_error_times = 0
     ret = read_A2_92()
     if 'fail'== ret:
@@ -300,8 +318,13 @@ while time.time() < endTick:
         error_times_statistics.append('Not read A2[100-101], i2c fail')
         round_error_times += 1
     #    os.system('.\Driver_GN25L96_Init_Test.py')
-        
-    #read_ddmi_TxPower()
+    read_ddmi_TxPower()
+    if 'fail' == ret:
+        error_times_statistics.append(str(total_times_count))
+        error_times_statistics.append('Not read A2[100-101], i2c fail')
+        round_error_times += 1
+
+
     if round_error_times >= 1:
         error_times_count += 1
     total_times_count += 1

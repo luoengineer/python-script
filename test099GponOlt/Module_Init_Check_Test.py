@@ -15,7 +15,7 @@ from classTestEvb import *
 
 #Test times
 #wr_and_rd_times  = 5
-run_time_second = 3600 * 15  # unit : s
+run_time_second = 3600 * 3  # unit : s
 # user type for password
 is_088_Module = 0
 is_other_Module = 1

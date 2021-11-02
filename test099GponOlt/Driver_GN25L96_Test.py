@@ -1,9 +1,16 @@
 import ctypes
 from ctypes import *
 import time
+import random
+import operator
 import sys
-from sys import path
-from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry, getAdc0, adc02TempIndex
+import os
+import math
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
 from classTestEvb import *
 
 
@@ -17,7 +24,7 @@ user_password_type = is_other_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -191,6 +198,7 @@ strFwVer = ''.join(strFwVer)
 #                 Open File
 #########################################################
 startTick = time.time()
+
 dateTime = time.strptime(time.asctime( time.localtime(startTick)))
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 testTitle = strFwVer

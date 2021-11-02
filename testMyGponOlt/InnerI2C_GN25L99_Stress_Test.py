@@ -1,12 +1,20 @@
 import ctypes
 from ctypes import *
 import time
-from cmdServ import cmdservdll, devUsbIndex
-from cmdServ import Sfp_Factory_Pwd_Entry, AteAllPowerOn, AteAllPowerOff, openUsbDevice
-from cmdServ import getAdc0, adc02TempIndex
+import random
+import operator
+import sys
+import os
 
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
-#Test times
+#==============================================================================
+# Test times
+#==============================================================================
 #wr_and_rd_times  = 5
 run_time_second = 60  # unit : s
 # user type for password
@@ -14,31 +22,53 @@ is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
+userCode = 351
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
+
+devUsbIndex = 0
+devSffChannel = 1
+devSfpChannel = 2
+
+#########################################################
+#               create object
+#########################################################
+testEvb = cTestEvb(devUsbIndex)
+
 
 #########################################################
 #               Inner Funtion
 #########################################################
+def random_int_list(start, stop, length):
+  start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
+  length = int(abs(length)) if length else 0
+  for i in range(length):
+    yield random.randint(start, stop)
 
-
+    
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0x20, 0x14, 0x05, 0x29)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 #########################################################
 #               Open USB Device
 #########################################################
-#TODO: How to config several usb device
-openUsbDevice(devUsbIndex)
+testEvb.openUsbDevice()
 
 #########################################################
 #               Slot Power On
 #########################################################
-AteAllPowerOn(devUsbIndex)
+testEvb.AteAllPowerOn()
 time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 
 #########################################################
@@ -260,6 +290,6 @@ print("*************************************************************************
 f.write("\n****************************************************************************")
 f.write("\nInner I2c stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
-AteAllPowerOff(devUsbIndex)
+testEvb.AteAllPowerOff()
 f.close()
 

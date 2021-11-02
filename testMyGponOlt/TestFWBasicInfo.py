@@ -166,7 +166,7 @@ def mcu_get_driver_table(drv_table_index):
 def Sfp_User_Pwd_Entry(userCode):
     i2cWriteBuf = c_ubyte * 4
     if 351 == userCode:
-        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+        factoryPwd = i2cWriteBuf(0x20, 0x14, 0x05, 0x29)
     elif 1 == userCode:
         factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
     testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))

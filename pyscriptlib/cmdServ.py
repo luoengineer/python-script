@@ -103,6 +103,12 @@ def adc02TempIndex(_ascTouple):
     tempIndex = int(chr(ascii_list[4]), 16) * 16 + int(chr(ascii_list[5]), 16)
     return tempIndex
 
+def adc_ubyteArrayToInt(_ascTouple):
+    ascii_list = list(_ascTouple)
+    adc = int(chr(ascii_list[2]), 16) * 4096 + int(chr(ascii_list[3]), 16) * 256+ \
+          int(chr(ascii_list[4]), 16) * 16 + int(chr(ascii_list[5]), 16)
+    return adc
+
 def Sfp_User_Read_088Pwd_Entry():
     i2cWriteBuf = c_ubyte * 4
     userPwd = i2cWriteBuf(0x00, 0x00, 0x10, 0x11)

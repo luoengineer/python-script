@@ -30,7 +30,7 @@ devSfpChannel = 2
 def Sfp_User_Pwd_Entry(userCode):
     i2cWriteBuf = c_ubyte * 4
     if 351 == userCode:
-        factoryPwd = i2cWriteBuf(0xC0, 0x72, 0x61, 0x79)
+        factoryPwd = i2cWriteBuf(0x20, 0x14, 0x05, 0x29)
     elif 1 == userCode:
         factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
     testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
@@ -109,6 +109,7 @@ Tx_Soft_Dis_En_STRESS_TEST = False
 Inner_I2C_STRESS_TEST = False
 Password_READ_BACK_TEST = True
 Module_Init_Check_TEST = False
+Password_Level_TEST = True
 
 
 if True == FW_Basic_Config_Check_TEST:
@@ -151,6 +152,9 @@ if True == A2_Direct_High_WRITE_READ_REPEATED_TEST:
 
 if True == A2_Page02_WRITE_READ_REPEATED_TEST:
     os.system('.\A2_Page02_Direct_Write_Read_Repeated_Test.py')
+
+if True == Password_Level_TEST:
+    os.system('.\Password_Level_Test.py')
 
 f = open(fileName, 'a+')
 dateTime = time.strptime(time.asctime())

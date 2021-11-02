@@ -1,24 +1,31 @@
 import ctypes
 from ctypes import *
 import time
+import random
+import operator
 import sys
-from sys import path
-from cmdServ import cmdservdll, Sfp_Factory_Pwd_Entry, getAdc0, adc02TempIndex
+import os
+
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
 from classTestEvb import *
 
-
-#Test times
+#==============================================================================
+# Test times
+#==============================================================================
 wr_and_rd_times  = 2
 # user type for password
 is_088_Module = 0
 is_other_Module = 1
 user_password_type = is_other_Module
 
-
+userCode = 351
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
@@ -151,6 +158,17 @@ class Driver_UX3320(Driver):
 #########################################################
 testEvb = cTestEvb(devUsbIndex)
 
+
+#########################################################
+#               Inner Funtion
+#########################################################
+def Sfp_User_Pwd_Entry(userCode):
+    i2cWriteBuf = c_ubyte * 4
+    if 351 == userCode:
+        factoryPwd = i2cWriteBuf(0x20, 0x14, 0x05, 0x29)
+    elif 1 == userCode:
+        factoryPwd = i2cWriteBuf(0x58, 0x47, 0x54, 0x45)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, 0xA2, 123, 4, byref(factoryPwd))
 #########################################################
 #               Open USB Device
 #########################################################
@@ -164,7 +182,7 @@ time.sleep(2)
 #########################################################
 #               Entry Password
 #########################################################
-Sfp_Factory_Pwd_Entry(user_password_type)
+Sfp_User_Pwd_Entry(userCode)
 time.sleep(1)
 
 #########################################################

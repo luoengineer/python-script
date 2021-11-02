@@ -1,10 +1,14 @@
 import ctypes
 from ctypes import *
 import time
-from cmdServ import cmdservdll,Sfp_Factory_Pwd_Entry
-from classTestEvb import *
 import sys
 import math
+import os
+path = os.path.dirname(os.path.dirname(__file__))
+path = os.path.join(path, 'pyscriptlib')
+sys.path.append(path)
+from cmdServ import *
+from classTestEvb import *
 
 #Test times
 wr_and_rd_times  = 1000
@@ -16,13 +20,12 @@ user_password_type = is_other_Module
 #Product list
 ComboSfpI2cAddr = [0xA0,0xA2,0xB0,0xB2,0xA4]
 SfpI2cAddr = [0xA0,0xA2,0xA4]
-XfpI2dAddr = [0xA0,0xA4]
+XfpI2cAddr = [0xA0,0xA4]
 
 devUsbIndex = 0
 devSffChannel = 1
 devSfpChannel = 2
 
-objdll = ctypes.cdll.LoadLibrary(".\ATEAPI.dll")
 tx_soft_dis = 0x40
 tx_soft_en  = 0x00
 
@@ -38,17 +41,17 @@ testEvb = cTestEvb(devUsbIndex)
 def txSoftDis():
     i2cWriteBuf = ctypes.c_ubyte*1
     i2cWriteByte = i2cWriteBuf(tx_soft_dis)
-    objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0x6E, 1, i2cWriteByte)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0x6E, 1, i2cWriteByte)
 
 def txSoftEn():
     i2cWriteBuf = ctypes.c_ubyte*1
     i2cWriteByte = i2cWriteBuf(tx_soft_en)
-    objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0x6E, 1, i2cWriteByte)
+    testEvb.objdll.AteIicRandomWrite(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0x6E, 1, i2cWriteByte)
 
 def getTxpower():
     i2cReadBuf = ctypes.c_ubyte*2
     i2cReadByte = i2cReadBuf()
-    objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0x66, 2, i2cReadByte)
+    testEvb.objdll.AteIicRandomRead(devUsbIndex, devSffChannel, SfpI2cAddr[1], 0x66, 2, i2cReadByte)
     return i2cReadByte
 
 def calcTxpower01uW(_byte_dat):
@@ -108,11 +111,6 @@ f.write("\n*********************************************************************
 print("{}".format(testTitle))
 f.write('\n'+testTitle)
 
-# clear factory password
-testEvb.AteAllPowerOff()
-time.sleep(2)
-testEvb.AteAllPowerOn()
-time.sleep(2)
 
 #########################################################
 #                 Run test
@@ -121,6 +119,7 @@ txSoftDis_ok = txSoftDis_fail = txSoftEn_ok = txSoftEn_fail = 0
 for cnt in range(wr_and_rd_times):
     txSoftDis()
     time.sleep(1)
+    '''   
     i2cReadTx = getTxpower()
     txpower = calcTxpower01uW(i2cReadTx)
     if ('-Inf' == txpower) or (-40 == txpower):
@@ -131,10 +130,38 @@ for cnt in range(wr_and_rd_times):
         txSoftDis_fail += 1
         print("Round {} TX: {} dBm, tx soft disable fail ! ".format(cnt, txpower))
         f.write("\nRound {} TX: {} dBm, tx soft disable fail ! ".format(cnt, txpower))
+    '''
+    strCmdOutBuff = ctypes.c_ubyte * 32
+    i2cReadTxADC = strCmdOutBuff()
+    i2cReadTxADC = getAdc(2)
+    txAdc = adc_ubyteArrayToInt(i2cReadTxADC)
+    if (50 > txAdc):
+        txSoftDis_ok += 1
+        print("Round {} TX ADC : {}, tx soft disable ok ! ".format(cnt, txAdc))
+        f.write("\nRound {} TX ADC: {}, tx soft disable ok ! ".format(cnt, txAdc))
+    else:
+        txSoftDis_fail += 1
+        print("Round {} TX: {}, tx soft disable fail ! ".format(cnt, txAdc))
+        f.write("\nRound {} TX: {}, tx soft disable fail ! ".format(cnt, txAdc))
 
     txSoftEn()
     time.sleep(1)
-    i2cReadTx = getTxpower()
+    i2cReadTxADC = getAdc(2)
+    '''
+    if 0 != i2cReadTxADC:
+        for item in range(len(i2cReadTxADC)):
+            print("{}".format(chr(i2cReadTxADC[item])), end='')
+    '''
+	txAdc = adc_ubyteArrayToInt(i2cReadTxADC)
+    if 256 < txAdc:
+        txSoftEn_ok += 1
+        print("Round {} TX: {}, tx soft enable ok ! ".format(cnt, txAdc))
+        f.write("\nRound {} TX: {}, tx soft enable ok ! ".format(cnt, txAdc))
+    else:
+        txSoftEn_fail += 1
+        print("Round {} TX: {}, tx soft enable fail ! ".format(cnt, txAdc))
+        f.write("\nRound {} TX: {}, tx soft enable fail ! ".format(cnt, txAdc))
+	'''
     txpower = calcTxpower01uW(i2cReadTx)
     if ('-Inf' != txpower) and (-40 < txpower):
         txSoftEn_ok += 1
@@ -144,7 +171,7 @@ for cnt in range(wr_and_rd_times):
         txSoftEn_fail += 1
         print("Round {} TX: {} dBm, tx soft enable fail ! ".format(cnt, txpower))
         f.write("\nRound {} TX: {} dBm, tx soft enable fail ! ".format(cnt, txpower))
-
+	'''
 print("tx soft disable is ok total {} times".format(txSoftDis_ok))
 f.write("\ntx soft disable is ok total {} times".format(txSoftDis_ok))
 print("tx soft disable is fail total {} times".format(txSoftDis_fail))
@@ -157,11 +184,10 @@ f.write("\ntx soft enable is fail total {} times".format(txSoftEn_fail))
 dateTime = time.strptime(time.asctime())
 dateTime = "{:4}-{:02}-{:02} {:02}:{:02}:{:02}".format(dateTime.tm_year,dateTime.tm_mon,dateTime.tm_mday,dateTime.tm_hour,dateTime.tm_min,dateTime.tm_sec)
 print("\n****************************************************************************")
-print("Tx Soft Dis-En stress, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+print("Tx Soft Dis-En stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 print("****************************************************************************")
 f.write("\n****************************************************************************")
-f.write("\nTx Soft Dis-En stress, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
+f.write("\nTx Soft Dis-En stress test, end time : {}, elapsed time : {:2d} h {:2d} m {:.02f} s".format(dateTime, int(time.time()-startTick)//3600,int(time.time()-startTick)%3600//60,int(time.time()-startTick)%3600%60))
 f.write("\n****************************************************************************")
 testEvb.AteAllPowerOff()
 f.close()
-
